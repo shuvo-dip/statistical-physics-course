@@ -1,35 +1,41 @@
-# Quantum Mechanics — Interactive Notes
+# Statistical Physics — Interactive Notes
 
 **Author:** Subhadip Biswas  
 
-An interactive, open-access set of notes on Quantum Mechanics designed for undergraduate physics students.
+An interactive, open-access set of notes on Statistical Physics designed for undergraduate and early graduate physics students.
 
 ---
 
 ## 📖 About
 
-These notes aim to build an intuitive and conceptual understanding of quantum mechanics, supported by visualizations, simulations, and computational examples.
-Most of the chapters are comming soon.
+These notes aim to develop an intuitive and quantitative understanding of statistical physics, connecting microscopic particle dynamics with macroscopic thermodynamic behavior. The material emphasizes conceptual clarity, mathematical reasoning, and modern applications across soft matter, biological physics, and complex systems.
+
+The notes are designed to integrate analytical derivations with computational examples, visualizations, and simulations to help students build physical intuition for many-body systems and collective phenomena.
+
+Most of the chapters are currently under development.
 
 ---
 
 ## 🎯 Topics (in progress)
 
-- Wavefunctions and probability  
-- Schrödinger equation  
-- Particle in a 1D box  
-- Harmonic oscillator  
-- Angular momentum  
-- Hydrogen atom  
-- Approximation methods  
+- Probability and statistical ensembles  
+- Canonical and grand canonical ensembles  
+- Fluctuations and response  
+- Phase transitions and critical phenomena  
+- Ising and lattice models  
+- Non-equilibrium statistical physics  
+- Soft matter and biological systems  
+- Computational statistical physics  
 
 ---
 
 ## ⚙️ Features
 
-- Interactive notebooks (Python-based)
-- Visual explanations of abstract concepts  
-- Clean, structured learning flow  
+- Interactive notebooks and simulations (Python-based)  
+- Visual exploration of many-body phenomena  
+- Computational demonstrations of statistical systems  
+- Connections to modern soft matter and biological physics  
+- Structured progression from fundamentals to advanced topics  
 
 ---
 
@@ -41,13 +47,21 @@ This site is built using **Jupyter Book / MyST**.
 
 ## 📁 Structure (simplified)
 
+- Foundations of Statistical Physics  
+- Thermodynamics and Ensembles  
+- Fluctuations and Collective Behavior  
+- Phase Transitions and Criticality  
+- Computational Statistical Physics  
+- Modern Topics in Soft and Biological Matter  
+
 ---
 
 ## 📄 License
 
-Content is intended for educational use. Licensing will be updated later.
+Content is intended for educational and non-commercial use. Licensing details will be updated in future releases.
 
 ---
+
 ## 📧 Contact
 
 **Subhadip Biswas**  
