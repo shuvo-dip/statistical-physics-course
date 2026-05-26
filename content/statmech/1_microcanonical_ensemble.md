@@ -1,6 +1,9 @@
 ---
+title: Introduction to Statistical Physics
+
 numbering:
   title:
+    enabled: false
     offset: 0
 
 kernelspec:
@@ -8,651 +11,708 @@ kernelspec:
   display_name: 'Python 3'
 ---
 
-(ch-microcanonical)=
-# The Microcanonical Ensemble
+```{card}
+In this part we introduce the foundations of **Statistical Physics**. We begin with a simple but deep question: how can the behaviour of a gas, a magnet, or a liquid — each made of an astronomically large number of atoms — be understood from the microscopic rules governing each individual particle?
 
-Statistical mechanics is the bridge between the microscopic world — atoms bouncing, colliding, and interacting — and the macroscopic world of temperature, pressure, and entropy. When you touch a hot cup of tea, you are not detecting the kinetic energy of any single molecule; you are sensing the collective statistical average of some $10^{23}$ molecules in frantic thermal motion.
+The central idea is that we do not need to track every atom. Instead, we use *probability* and *statistics* to extract the macroscopic behaviour that emerges when enormously many particles interact together. The key concepts developed here are the *microstate*, the *macrostate*, the *fundamental postulate of equal probabilities*, and the celebrated *Boltzmann entropy* $S = k_B \ln \Omega$.
 
-The central question of statistical mechanics is: **given only the macroscopic constraints on a system (total energy, volume, number of particles), what can we predict about its thermodynamic behaviour?**
+From these foundations, the familiar quantities of thermodynamics — *temperature*, *pressure*, *energy*, and *entropy* — are given deep microscopic meaning for the first time. Special attention is given to the *classical ideal gas* as the paradigmatic application, which lets us derive the ideal gas law and the equipartition theorem from scratch.
 
-The answer rests on a profound and elegant idea: *we do not need to track every single particle*. Instead, we ask what fraction of all possible microscopic configurations are consistent with our macroscopic constraints, and we treat all such configurations as equally likely. This is the **fundamental postulate of statistical mechanics**, and the mathematical framework built around it is the **ensemble theory**.
+This part aims to build physical intuition first, introducing mathematical tools only when they genuinely illuminate the physics, and preparing the reader for the study of the canonical and grand-canonical ensembles.
+```
 
-In this chapter we develop the first and most fundamental ensemble — the **microcanonical ensemble** — which describes a system that is completely isolated from its surroundings. We will:
+(ch-statphys)=
+# Introduction to Statistical Physics
 
-1. Define the **microcanonical ensemble** and its probability distribution over microstates.
-2. Introduce the **phase space** and the volume of accessible microstates.
-3. Postulate and derive properties of the **Boltzmann entropy** $S = k_B \ln \Gamma$.
-4. Define **temperature**, **pressure**, and **chemical potential** through entropy.
-5. Give a physical interpretation of temperature.
-6. Discuss the **validity** of the statistical description.
-7. Derive the **first law of thermodynamics** from statistical mechanics.
-8. Discuss the **statistical interpretation of entropy** and the second law.
-9. Apply the full machinery to the **classical ideal gas**, deriving the Sackur-Tetrode equation and the equations of state.
-10. Resolve the **Gibbs paradox** and understand the role of indistinguishability.
+Imagine you have a bottle of air sitting on your desk. Inside that bottle are roughly $10^{22}$ molecules — nitrogen, oxygen, a little argon — all flying around, bouncing off each other and off the walls, changing direction billions of times per second. If you tried to write down the position and velocity of every single molecule and track how each one evolves according to Newton's laws, you would need more computer memory than exists on Earth, and more time than the age of the universe.
 
-(ch_mce_s_definition)=
-## Definition of the Microcanonical Ensemble
+And yet, with just three numbers — **temperature**, **pressure**, and **volume** — you can describe that bottle of air with extraordinary precision. How is that possible?
 
-(ch_mce_ss_isolated_system)=
-### The Isolated System
+The answer is **statistical physics**: the art of extracting exact macroscopic predictions from microscopic chaos, not *despite* the enormous number of particles, but *because* of it. When $10^{22}$ particles are involved, statistical fluctuations become negligibly small, and average behaviour becomes essentially certain. This is the deep reason thermodynamics works so well.
 
-We consider a system that is **completely isolated** from its surroundings. This means:
+This chapter introduces the ideas, vocabulary, and first results of statistical physics. We will:
 
-- It contains a **fixed number of particles** $N$.
-- It has a **fixed total energy** $E$ (to within a small uncertainty $\Delta$).
-- It occupies a **fixed volume** $V$.
+1. Understand the difference between **microstates** and **macrostates**.
+2. State and explore the **fundamental postulate** of statistical mechanics.
+3. Introduce **phase space** as the arena where statistical mechanics lives.
+4. Define the **Boltzmann entropy** and understand what it really means.
+5. Derive **temperature**, **pressure**, and **the first law** from statistics alone.
+6. Apply everything to the **classical ideal gas**.
+7. Resolve the **Gibbs paradox** and understand why particles must be treated as indistinguishable.
 
-Such a system exchanges **neither energy nor particles** with anything outside. It is described entirely by the triple $(E, V, N)$.
+(ch_sp_s_micro_macro)=
+## Microstates and Macrostates
 
-The microscopic state of such a system — its **microstate** — is specified by the positions and momenta of all $N$ particles:
+(ch_sp_ss_the_gap)=
+### The Gap Between Micro and Macro
 
-$$\text{microstate} = \{(\mathbf{q}_1, \mathbf{p}_1), (\mathbf{q}_2, \mathbf{p}_2), \ldots, (\mathbf{q}_N, \mathbf{p}_N)\}$$
+The most fundamental distinction in statistical physics is the difference between a **microstate** and a **macrostate**.
 
-For a system in three dimensions, this is a point in a **$6N$-dimensional phase space** $\Gamma$, with coordinates $(q_1, \ldots, q_{3N}, p_1, \ldots, p_{3N})$.
+A **microstate** is the complete, precise description of a system at the atomic level — the exact position and velocity of every single particle, at every instant. For a gas of $N$ particles in three dimensions, this is a list of $6N$ numbers: three position coordinates and three momentum components per particle. The microstate changes billions of times per second as particles collide and move.
 
-(ch_mce_ss_liouville)=
-### Liouville's Theorem and Stationarity
-
-The time evolution of the phase-space density $\rho(\mathbf{q}, \mathbf{p}, t)$ is governed by **Liouville's theorem**:
-
-$$\frac{d\rho}{dt} = \frac{\partial \rho}{\partial t} + \{\rho, H\} = 0$$
-
-where $\{A, B\} = \sum_i \left(\frac{\partial A}{\partial q_i}\frac{\partial B}{\partial p_i} - \frac{\partial A}{\partial p_i}\frac{\partial B}{\partial q_i}\right)$ is the Poisson bracket and $H(\mathbf{q}, \mathbf{p})$ is the Hamiltonian. This equation says that phase-space density is **conserved** along trajectories — it flows like an incompressible fluid in phase space.
-
-For a stationary (equilibrium) distribution we require $\partial_t \rho = 0$, so $\{H, \rho\} = 0$. The general solution is:
-
-$$\rho(\mathbf{q}, \mathbf{p}) = \rho\bigl(H(\mathbf{q}, \mathbf{p})\bigr)$$
-
-meaning the equilibrium distribution can only depend on the coordinates through the Hamiltonian (the energy). For an isolated system, this leads immediately to a **uniform distribution** over the energy surface.
-
-(ch_mce_ss_equal_probability)=
-### The Fundamental Postulate
+A **macrostate** is what we actually measure in the lab — quantities like temperature $T$, pressure $P$, volume $V$, and total energy $E$. A macrostate is specified by just a handful of numbers, regardless of whether the system contains $10$ or $10^{23}$ particles.
 
 ```{important}
-**Postulate of Equal A Priori Probabilities (Fundamental Postulate):** In an isolated system at equilibrium, all accessible microstates — those consistent with the macroscopic constraints $E$, $V$, $N$ — are *equally probable*.
+The central observation of statistical mechanics is that a single macrostate corresponds to an **astronomically large number** of microstates. All of those microstates look identical to any macroscopic measurement, yet they are genuinely different at the microscopic level.
+
+The job of statistical mechanics is to figure out which macrostate a system will adopt, given what we know about the microstates.
 ```
 
-This is not something we can derive from first principles; it is a postulate whose validity is confirmed by the extraordinary agreement of its consequences with experiment. It is the cornerstone of all of statistical mechanics.
+(ch_sp_ss_coins)=
+### A Warm-Up: Coins and Counting
 
-(ch_mce_ss_energy_shell)=
-### The Energy Shell and the Probability Distribution
+Before diving into atoms and gases, let us build intuition with the simplest possible example: flipping coins.
 
-In practice, we allow the energy to lie in a narrow shell $[E, E + \Delta]$ rather than at a precise value $E$ (both for mathematical convenience and because energy cannot be specified with infinite precision in any real situation).
+Imagine you flip $N = 4$ coins. Each coin can be Heads (H) or Tails (T). The **microstate** is the full outcome of every coin — something like HHTH. There are $2^4 = 16$ equally probable microstates in total.
 
-The **microcanonical ensemble** is then defined by the probability density:
+Now suppose you only care about the **total number of heads** — this is the macrostate. There are only 5 possible macrostates: 0, 1, 2, 3, or 4 heads.
 
-$$\boxed{\rho(\mathbf{q}, \mathbf{p}) = \begin{cases} \dfrac{1}{\Gamma(E, V, N)} & \text{if } E < H(\mathbf{q}, \mathbf{p}) < E + \Delta \\ 0 & \text{otherwise} \end{cases}}$$
+How many microstates correspond to each macrostate?
 
-where
+| Macrostate (# heads) | Number of microstates | Example microstates |
+|:---:|:---:|:---|
+| 0 | 1 | TTTT |
+| 1 | 4 | HTTT, THTT, TTHT, TTTH |
+| 2 | 6 | HHTT, HTHT, HTTH, THHT, THTH, TTHH |
+| 3 | 4 | HHHT, HHTH, HTHH, THHH |
+| 4 | 1 | HHHH |
 
-$$\Gamma(E, V, N) = \int\!\!\!\int_{E < H(\mathbf{q},\mathbf{p}) < E+\Delta} d^{3N}q\, d^{3N}p \tag{1}$$
+The macrostate with 2 heads is **6 times more likely** than the macrostate with 0 heads, simply because it has 6 times as many corresponding microstates. If we observed the system at a random moment, we would almost certainly find it in the most probable macrostate.
 
-is the **phase-space volume** of the energy shell. The dependence on the spatial volume $V$ enters through the limits of the position integrals $dq_i$, which are bounded to the physical volume of the container.
+Now scale this up: for $N = 100$ coins, the number of microstates for 50 heads is roughly $10^{29}$, while 100 heads has just 1. For $N = 10^{23}$ coins (the scale of real physics), the most probable macrostate is so overwhelmingly more likely than any other that it is, for all practical purposes, **the only macrostate we ever observe**. This is why thermodynamics is so precise.
 
-```{note}
-The distribution $\rho(\mathbf{q},\mathbf{p})$ is uniform over the energy shell and zero outside it. This is the most natural and democratic choice: no microstate within the accessible region is favoured over any other.
-```
+````{example} Coin flipping and the emergence of a macrostate
 
-The expectation value of any classical observable $O(\mathbf{q}, \mathbf{p})$ is:
-
-$$\langle O \rangle = \int d^{3N}q\, d^{3N}p\; \rho(\mathbf{q}, \mathbf{p})\, O(\mathbf{q}, \mathbf{p}) = \frac{1}{\Gamma(E,V,N)}\int\!\!\!\int_{E<H<E+\Delta} d^{3N}q\, d^{3N}p\; O(\mathbf{q},\mathbf{p})$$
-
-(ch_mce_s_phase_space)=
-## Volume of Phase Space
-
-(ch_mce_ss_Phi_Omega)=
-### Cumulative Phase-Space Volume and the Density of States
-
-Let $\Phi(E, V, N)$ denote the **total phase-space volume enclosed by the energy surface $H = E$**:
-
-$$\Phi(E, V, N) = \int\!\!\!\int_{H(\mathbf{q},\mathbf{p}) \leq E} d^{3N}q\, d^{3N}p$$
-
-The volume of the energy shell is the difference:
-
-$$\Gamma(E) = \Phi(E + \Delta) - \Phi(E) \approx \frac{\partial \Phi(E)}{\partial E}\,\Delta \equiv \Omega(E)\,\Delta$$
-
-where we defined the **density of states**:
-
-$$\boxed{\Omega(E, V, N) = \frac{\partial \Phi(E)}{\partial E} = \int d^{3N}q \int d^{3N}p\;\delta\bigl(E - H(\mathbf{q},\mathbf{p})\bigr)} \tag{2}$$
-
-The density of states $\Omega(E)$ counts the number of microstates per unit energy at energy $E$. It is a fundamental quantity in statistical mechanics.
-
-```{note}
-**Shell vs. sphere:** In the thermodynamic limit $N \to \infty$, both $\ln \Gamma(E)$ and $\ln \Phi(E)$ give the same entropy, because the volume of a $3N$-dimensional sphere is dominated by its outermost shell. More precisely:
-
-$$\ln \Phi(E) \sim 3N \ln R, \qquad \ln \Gamma(E) \sim (3N-1)\ln R + \ln \Delta \approx 3N \ln R$$
-
-for a sphere of radius $R \propto \sqrt{E}$ in $3N$ dimensions. The correction is of order $\ln N$, which is negligible compared to the dominant $N$ scaling.
-```
-
-(ch_mce_ss_hypersphere)=
-### Hyperspheres in High Dimensions
-
-For later use, we compute the volume of an $n$-dimensional hypersphere of radius $R$:
-
-$$V_n(R) = \int_{\sum_{i=1}^n x_i^2 \leq R^2} d^n x = R^n \, V_n(1)$$
-
-To find $V_n(1)$, we use the Gaussian integral trick. Write:
-
-$$\pi^{n/2} = \left(\int_{-\infty}^{+\infty} e^{-x^2} dx\right)^n = \int e^{-R^2} V_n(1)\, n R^{n-1}\, dR = \frac{n}{2} V_n(1)\,\Gamma\!\left(\frac{n}{2}\right)$$
-
-where $\Gamma(z) = \int_0^\infty x^{z-1} e^{-x}\,dx$ is the Euler gamma function. This gives:
-
-$$\boxed{V_n(1) = \frac{\pi^{n/2}}{\Gamma(n/2 + 1)}, \qquad V_n(R) = \frac{\pi^{n/2}}{\Gamma(n/2+1)} R^n} \tag{3}$$
-
-For reference: $\Gamma(n) = (n-1)!$ for integer $n$, $\Gamma(1/2) = \sqrt{\pi}$, and $\Gamma(n+1) = n\,\Gamma(n)$.
-
-```{example} Hypersphere volumes
-- **2D** (disk): $V_2(R) = \pi R^2$, i.e. $\Gamma(2) = 1! = 1$, giving $V_2(1) = \pi$. ✓
-- **3D** (ball): $V_3(R) = \frac{4}{3}\pi R^3$, i.e. $\Gamma(5/2) = \frac{3}{4}\sqrt{\pi}$, giving $V_3(1) = \frac{4\pi}{3}$. ✓
-- **High $n$**: The volume is heavily concentrated in a thin shell near the surface — a striking geometric fact that has profound physical consequences.
-```
-
-(ch_mce_ss_shell_thickness)=
-### How Thick Should the Energy Shell Be?
-
-The entropy depends on $\ln \Gamma(E)$, which involves $\Delta$. Is the entropy then ambiguous?
-
-$$\ln \Gamma = \ln\bigl(\Omega(E)\,\Delta\bigr) = \ln \Omega(E) + \ln \Delta$$
-
-In the **thermodynamic limit** $N \to \infty$, we have $\ln \Omega(E) \propto N$ (as we shall see), while $\ln \Delta$ is at most $\mathcal{O}(\ln N)$ for any reasonable choice of $\Delta$ (e.g., $\Delta \sim k_B T$). Therefore:
-
-$$\frac{\ln \Delta}{\ln \Omega(E)} \sim \frac{\ln N}{N} \to 0 \quad \text{as } N \to \infty$$
-
-The entropy is **independent of $\Delta$** in the thermodynamic limit. This is a crucial consistency check of the whole framework.
-
-(ch_mce_s_entropy)=
-## Definition of Entropy
-
-(ch_mce_ss_boltzmann_entropy)=
-### The Boltzmann Postulate
-
-Entropy cannot be obtained as an expectation value of a classical observable — it is instead a property of the **overall distribution** of microstates. Boltzmann's great insight (1872) was:
-
-```{important}
-**Boltzmann's Entropy Postulate:** The entropy is proportional to the logarithm of the number of accessible microstates:
-
-$$\boxed{S(E, V, N) = k_B \ln \left[\frac{\Gamma(E, V, N)}{\Gamma_0(N)}\right]} \tag{4}$$
-
-where $k_B = 1.381 \times 10^{-23}$ J/K is **Boltzmann's constant** and $\Gamma_0(N)$ is a normalisation factor that makes the argument dimensionless.
-```
-
-In the thermodynamic limit, this is equivalent to:
-
-$$S = k_B \ln \Omega(E)\,\Delta \approx k_B \ln \Phi(E) \approx k_B \ln \Omega(E)$$
-
-(all three expressions agree up to $\mathcal{O}(\ln N)$ corrections that are negligible for $N \sim 10^{23}$).
-
-(ch_mce_ss_normalisation)=
-### The Normalisation Factor $\Gamma_0(N)$
-
-The normalisation constant $\Gamma_0(N)$ serves two purposes:
-
-1. **Dimensional consistency:** $\Gamma$ has units of $(\text{position} \times \text{momentum})^{3N}$, so $\Gamma_0$ must cancel these units to make $\ln(\Gamma/\Gamma_0)$ dimensionless.
-
-2. **Extensivity:** The $N$-dependence of $\Gamma_0$ is physically significant.
-
-Classical mechanics cannot determine $\Gamma_0(N)$ uniquely. Quantum mechanics gives the answer:
-
-$$\boxed{\Gamma_0(N) = h^{3N}\, N!} \tag{5}$$
-
-where $h = 6.626 \times 10^{-34}$ m²·kg/s is Planck's constant.
-
-- The factor $h^{3N}$ provides the natural unit of phase-space volume: each quantum state occupies a phase-space cell of volume $h^{3N}$ (from the Heisenberg uncertainty principle, $\Delta q \Delta p \sim h$).
-- The factor $N!$ corrects for the **indistinguishability** of identical particles — exchanging two identical particles does not create a new microstate.
-
-```{note}
-Even in situations where classical mechanics gives an excellent description of particle dynamics (high temperature, low density), we must still account for the quantum-mechanical indistinguishability of particles. As Gibbs noted: even though one can treat the motion of molecules classically, one cannot label individual atomic particles as though they were macroscopic billiard balls. The factor $N!$ is a quantum-mechanical input into an otherwise classical theory.
-```
-
-(ch_mce_ss_entropy_expectation)=
-### Entropy as an Expectation Value
-
-The Boltzmann entropy can be rewritten as an expectation value. Since $\rho(\mathbf{q}, \mathbf{p}) = 1/\Gamma$ within the energy shell:
-
-$$S = -k_B \ln\bigl[\Gamma_0(N)\, \rho(\mathbf{q}, \mathbf{p})\bigr] = -k_B \left\langle \ln\bigl[\Gamma_0(N)\, \rho(\mathbf{q}, \mathbf{p})\bigr] \right\rangle$$
-
-This is precisely the **Gibbs–Shannon entropy**:
-
-$$\boxed{S = -k_B \langle \ln[\Gamma_0 \rho] \rangle} \tag{6}$$
-
-This form makes clear that entropy measures our **ignorance** about the microstate: the more microstates are accessible (large $\Gamma$), the less we know about which one the system is actually in, and the larger the entropy.
-
-(ch_mce_s_temperature)=
-## Definition of Temperature
-
-(ch_mce_ss_thermal_contact)=
-### Two Systems in Thermal Contact
-
-Consider two systems, 1 and 2, characterised by $(E_1, V_1, N_1)$ and $(E_2, V_2, N_2)$ respectively, brought into **thermal contact**. They may exchange energy, but the total energy $E = E_1 + E_2$ is conserved. The volumes and particle numbers of each subsystem are kept fixed.
-
-The combined phase-space volume factorises:
-
-$$\frac{\Gamma(E, V, N)}{\Gamma_0(N)} = \sum_{E_1} \frac{\Gamma_1(E_1, V_1, N_1)}{\Gamma_0(N_1)} \cdot \frac{\Gamma_2(E - E_1, V_2, N_2)}{\Gamma_0(N_2)}$$
-
-The **most probable** energy split is the one that maximises this product (equivalently, maximises the sum of logarithms, i.e., maximises the total entropy). Setting the derivative to zero:
-
-$$\frac{d}{dE_1}\bigl[S_1(E_1) + S_2(E - E_1)\bigr] = 0 \implies \frac{\partial S_1}{\partial E_1}\bigg|_{V_1, N_1} = \frac{\partial S_2}{\partial E_2}\bigg|_{V_2, N_2}$$
-
-(ch_mce_ss_temperature_def)=
-### Definition of Temperature
-
-The equilibrium condition above tells us that at equilibrium, a certain quantity is equalised between the two systems. We **define** the **thermodynamic temperature** as:
-
-$$\boxed{\frac{1}{T} \equiv \left(\frac{\partial S}{\partial E}\right)_{V, N}} \tag{7}$$
-
-so that the equilibrium condition becomes simply $T_1 = T_2$.
-
-This definition has the correct properties:
-
-- $T$ is intensive (it is equal for systems in thermal equilibrium, regardless of size).
-- For most systems, $S$ increases with $E$, giving $T > 0$.
-- It agrees with the empirical (ideal gas) definition of temperature.
-
-(ch_mce_ss_law_of_large_numbers)=
-### Sharpness of the Energy Distribution
-
-The law of large numbers guarantees that the energy distribution $P(E_1) \propto e^{[S_1(E_1) + S_2(E-E_1)]/k_B}$ is **extremely sharply peaked** around its maximum value $E_1^*$ for large $N$. The width of the peak scales as $\sqrt{E_1^*} \propto \sqrt{N}$, while $E_1^* \propto N$. The relative width is:
-
-$$\frac{\delta E_1}{E_1^*} \sim \frac{\sqrt{N}}{N} = \frac{1}{\sqrt{N}} \to 0 \quad \text{as } N \to \infty$$
-
-For $N \sim 10^{23}$, relative fluctuations are of order $10^{-11\text{.}5}$ — completely unobservable. This is why thermodynamics is so precise.
-
-(ch_mce_s_physical_temperature)=
-## Physical Interpretation of Temperature
-
-Temperature has a beautiful physical interpretation. From the definition $1/T = \partial S/\partial E|_{V,N}$:
-
-$$T = \left(\frac{\partial E}{\partial S}\right)_{V,N}$$
-
-This says that temperature measures **how much the energy of a system increases when entropy is added to it at fixed volume and particle number**.
-
-More intuitively: entropy counts accessible microstates. A large $1/T$ means that adding a small amount of energy dramatically increases the number of accessible microstates — the system is "very responsive" to energy. A small $1/T$ (high temperature) means the system is already exploring so many microstates that adding more energy doesn't much increase the count.
-
-**Direction of heat flow:** Suppose system 1 has $\partial S_1/\partial E_1 > \partial S_2/\partial E_2$, i.e., $T_1 < T_2$. Then transferring a small amount of energy $\delta E > 0$ from system 2 to system 1 increases the total entropy:
-
-$$\delta S = \delta S_1 + \delta S_2 = \left(\frac{1}{T_1} - \frac{1}{T_2}\right)\delta E > 0$$
-
-since $T_1 < T_2$. Heat flows spontaneously from the hotter system (higher $T$) to the cooler one (lower $T$) — exactly as we observe. This is the **second law of thermodynamics** emerging from the statistics.
-
-**Kinetic interpretation:** For an ideal gas (derived in detail below), one finds $E = \frac{3}{2}Nk_BT$, so:
-
-$$k_BT = \frac{2E}{3N} = \frac{2}{3} \times \text{average kinetic energy per particle}$$
-
-Temperature is thus proportional to the **average kinetic energy per degree of freedom** — a result of the equipartition theorem. At room temperature ($T = 300$ K), $k_BT \approx 4 \times 10^{-21}$ J $\approx 0.025$ eV, setting the scale of thermal motion.
-
-(ch_mce_s_validity)=
-## Validity of the Statistical Description
-
-The statistical mechanics framework rests on several assumptions. It is important to understand when these are valid.
-
-**1. Large system (thermodynamic limit):** The statistical description becomes exact only in the limit $N \to \infty$, $V \to \infty$ with $N/V = $ const. For finite systems, fluctuations are suppressed only as $1/\sqrt{N}$, and corrections to thermodynamics are of order $(\ln N)/N$. In practice, for $N \gtrsim 10^{20}$, the description is excellent.
-
-**2. Ergodicity:** The fundamental postulate (equal a priori probabilities) implicitly assumes that the system explores all accessible microstates equally over long times. This is the **ergodic hypothesis**: time averages equal ensemble averages. This is extremely difficult to prove rigorously for general Hamiltonians, but is believed to hold for most many-body systems and is supported by overwhelming experimental evidence.
-
-**3. Classical vs. quantum treatment:** The classical phase-space description is valid when:
-
-$$\lambda_{\text{dB}} = \frac{h}{\sqrt{2\pi m k_B T}} \ll n^{-1/3} = \left(\frac{V}{N}\right)^{1/3}$$
-
-i.e., when the thermal de Broglie wavelength $\lambda_{\text{dB}}$ is much smaller than the mean inter-particle spacing. For an ideal gas at room temperature and atmospheric pressure, $\lambda_{\text{dB}} \sim 10^{-11}$ m while the mean spacing is $\sim 3 \times 10^{-9}$ m, so the classical treatment is justified.
-
-**4. Equilibrium:** Statistical mechanics as developed here describes only **equilibrium** states. Non-equilibrium phenomena (transport, relaxation) require additional theoretical machinery.
-
-**5. The $N!$ factor:** Even in the classical regime, the factor $N!$ from quantum indistinguishability must be included. Without it, the entropy is not extensive (the Gibbs paradox, discussed below).
-
-+++ { "page-break": true }
-+++
-
-(ch_mce_s_pressure)=
-## Definition of Pressure and the First Law
-
-(ch_mce_ss_pressure_def)=
-### Pressure from Entropy
-
-By an argument entirely analogous to the derivation of temperature, we can define **pressure** through the entropy. Consider two systems separated by a movable, thermally insulating wall. Energy is fixed in each subsystem, but volumes $V_1$ and $V_2$ (with $V_1 + V_2 = V$ fixed) can adjust. Maximising the total entropy:
-
-$$\frac{\partial S_1}{\partial V_1}\bigg|_{E_1, N_1} = \frac{\partial S_2}{\partial V_2}\bigg|_{E_2, N_2}$$
-
-The common value of this derivative at equilibrium defines the pressure:
-
-$$\boxed{\frac{P}{T} \equiv \left(\frac{\partial S}{\partial V}\right)_{E, N}} \tag{8}$$
-
-Similarly, for a permeable wall (allowing particle exchange), the **chemical potential** is defined by:
-
-$$\boxed{-\frac{\mu}{T} \equiv \left(\frac{\partial S}{\partial N}\right)_{E, V}} \tag{9}$$
-
-The sign conventions in (8) and (9) are chosen to match the standard thermodynamic definitions.
-
-(ch_mce_ss_first_law)=
-### The First Law of Thermodynamics
-
-From the definitions (7), (8), (9), we can write the total differential of the entropy $S(E, V, N)$:
-
-$$dS = \left(\frac{\partial S}{\partial E}\right)_{V,N} dE + \left(\frac{\partial S}{\partial V}\right)_{E,N} dV + \left(\frac{\partial S}{\partial N}\right)_{E,V} dN$$
-
-$$dS = \frac{1}{T}\,dE + \frac{P}{T}\,dV - \frac{\mu}{T}\,dN$$
-
-Rearranging (identifying the internal energy $U = E$ for an isolated system):
-
-$$\boxed{dU = T\,dS - P\,dV + \mu\,dN} \tag{10}$$
-
-This is the **fundamental thermodynamic relation** — the combined first and second laws. It encodes:
-
-- $T\,dS$: energy added as **heat** (reversibly)
-- $-P\,dV$: work done **by** the system
-- $\mu\,dN$: energy change due to **particle exchange**
-
-The entire framework of thermodynamics — all thermodynamic potentials, Maxwell relations, equations of state — follows from equation (10) once $S(E, V, N)$ is known.
-
-(ch_mce_ss_calculation_recipe)=
-### Recipe for Microcanonical Calculations
-
-Given a Hamiltonian $H(\mathbf{q}, \mathbf{p})$, the microcanonical calculation proceeds as:
-
-1. **Write the Hamiltonian** $H(\mathbf{q}, \mathbf{p})$.
-2. **Compute the phase-space volume** $\Phi(E)$ enclosed by the energy surface $H = E$.
-3. **Obtain the entropy:** $S(E, V, N) = k_B \ln[\Phi(E) / \Gamma_0(N)]$.
-4. **Differentiate** to get temperature, pressure, and chemical potential via (7), (8), (9).
-5. **Invert** $1/T = \partial S/\partial E$ to get energy as a function of temperature: $U = U(T, V, N)$ (caloric equation of state).
-6. **Use** $P/T = \partial S/\partial V$ to get the equation of state $P = P(T, V, N)$.
-7. **Legendre transform** to obtain other thermodynamic potentials: $F = U - TS$, $H = U + PV$, $G = U + PV - TS$.
-
-(ch_mce_s_statistical_entropy)=
-## Statistical Interpretation of Entropy
-
-The statistical definition $S = k_B \ln \Gamma$ gives entropy a profound physical meaning. Let us explore several aspects of this.
-
-(ch_mce_ss_extensivity)=
-### Extensivity of Entropy
-
-For a system of $N$ weakly interacting particles in volume $V$ with energy $E$, the phase-space volume scales as:
-
-$$\Gamma(E, V, N) \sim V^N \gamma^N(E/N, V/N)$$
-
-The $V^N$ factor comes from the $N$ independent position integrals. With $\Gamma_0(N) = h^{3N}N!$ and Stirling's formula $\ln N! \approx N(\ln N - 1)$:
-
-$$S = k_B \ln\frac{\Gamma}{\Gamma_0} = k_B \ln\frac{V^N \gamma^N}{h^{3N}N!} = k_B N \left[\ln\!\left(\frac{V}{N}\frac{\gamma}{h^3}\right) + 1\right] \equiv N\, s(E/N, V/N)$$
-
-The entropy is **extensive**: $S$ is proportional to $N$ for fixed intensive quantities $E/N$ and $V/N$. This is the correct thermodynamic behaviour.
-
-(ch_mce_ss_second_law)=
-### Second Law of Thermodynamics
-
-The statistical entropy satisfies the second law: **the entropy of an isolated system can only increase (or remain constant) for any spontaneous process**.
-
-Consider **free expansion**: a gas initially confined to volume $V_1$ is allowed to expand into volume $V_2 > V_1$ (into vacuum, no heat or work exchange). The total energy $E$ and $N$ are unchanged, but the accessible phase-space volume increases because more positions are now available for each particle:
-
-$$\Gamma(E, V_2, N) > \Gamma(E, V_1, N) \implies S(E, V_2, N) > S(E, V_1, N)$$
-
-More generally:
-
-```{important}
-**Equivalence:** The second law of thermodynamics is equivalent to the statement that removing dynamical constraints on a system (opening a partition, allowing a wall to move) increases the number of accessible microstates, and hence increases the entropy.
-```
-
-The entropy is maximised at equilibrium: $S(x)$ is maximal with respect to any internal constraint $x$ that is free to adjust.
-
-(ch_mce_ss_additivity)=
-### Additivity and Thermal Equilibrium
-
-When two systems with the same intensive properties (same $T$, $P$, $\mu$) are combined, entropy is additive:
-
-$$S(E, V, N) = S(E_1, V_1, N_1) + S(E_2, V_2, N_2)$$
-
-For systems in thermal contact (different initial temperatures), the combined system evolves to the state of maximum entropy, which corresponds to equal temperatures. The correction term $\sim k_B \ln(\sqrt{E_{\text{max}}})$ from the width of the energy distribution is negligible compared to the extensive entropy $\sim Nk_B$, confirming additivity in the thermodynamic limit.
-
-+++ { "page-break": true }
-+++
-
-(ch_mce_s_ideal_gas)=
-## Classical Ideal Gas in the Microcanonical Ensemble
-
-The ideal gas is the paradigmatic application of the microcanonical ensemble. It consists of $N$ non-interacting, structureless classical particles in a box of volume $V$, described by the Hamiltonian:
-
-$$H(\mathbf{q}, \mathbf{p}) = \sum_{i=1}^{N} \frac{\mathbf{p}_i^2}{2m} \tag{11}$$
-
-Note that $H$ depends only on momenta — the position degrees of freedom are free (confined only to the box volume $V$).
-
-(ch_mce_ss_phase_space_volume)=
-### Phase-Space Volume
-
-The total phase-space volume enclosed by the energy surface $H = E$ is:
-
-$$\Phi(E) = \int_{H(\mathbf{q},\mathbf{p}) \leq E} d^{3N}q\, d^{3N}p$$
-
-The position integrals are free (each particle ranges over the volume $V$), giving $V^N$:
-
-$$\Phi(E) = V^N \int_{\sum_i \mathbf{p}_i^2/(2m) \leq E} d^{3N}p = V^N \int_{\sum_i \mathbf{p}_i^2 \leq 2mE} d^{3N}p$$
-
-The remaining integral is the volume of a $3N$-dimensional hypersphere of radius $R = \sqrt{2mE}$:
-
-$$\int_{\sum_i \mathbf{p}_i^2 \leq 2mE} d^{3N}p = V_{3N}(\sqrt{2mE}) = \frac{\pi^{3N/2}}{\Gamma(3N/2 + 1)}\,(2mE)^{3N/2}$$
-
-Therefore:
-
-$$\boxed{\Phi(E, V, N) = V^N \cdot \frac{\pi^{3N/2}}{\Gamma(3N/2 + 1)}\,(2mE)^{3N/2}} \tag{12}$$
-
-(ch_mce_ss_sackur_tetrode)=
-### Entropy: The Sackur-Tetrode Equation
-
-Using $S = k_B \ln[\Phi(E)/\Gamma_0(N)]$ with $\Gamma_0(N) = h^{3N}N!$:
-
-$$S = k_B \ln\left[\frac{V^N (2mE)^{3N/2} \pi^{3N/2}}{h^{3N} N! \,\Gamma(3N/2+1)}\right]$$
-
-For large $N$, we use Stirling's formula in two places:
-
-- $\ln(N!) \approx N\ln N - N$
-- $\ln\Gamma(3N/2+1) = \ln(3N/2)! \approx \frac{3N}{2}\ln\frac{3N}{2} - \frac{3N}{2}$
-
-A careful expansion gives the **Sackur-Tetrode equation** (1912):
-
-$$\boxed{S(E, V, N) = k_B N \left[\ln\left(\frac{V}{N}\left(\frac{4\pi m E}{3Nh^2}\right)^{3/2}\right) + \frac{5}{2}\right]} \tag{13}$$
-
-This is exact in the thermodynamic limit. It is a remarkable result: from purely mechanical counting, we have derived the full entropy of an ideal gas.
-
-```{note}
-The argument of the logarithm in the Sackur-Tetrode equation can also be written using the thermal de Broglie wavelength $\lambda = h/\sqrt{2\pi m k_B T}$:
-
-$$S = Nk_B\left[\ln\frac{1}{\rho\lambda^3} + \frac{5}{2}\right]$$
-
-where $\rho = N/V$ is the number density. The condition for the classical description to be valid is $\rho\lambda^3 \ll 1$, i.e., the de Broglie wavelength is much smaller than the mean inter-particle spacing $\rho^{-1/3}$.
-```
-
-(ch_mce_ss_equations_of_state)=
-### Equations of State
-
-From the Sackur-Tetrode equation, all thermodynamic quantities follow by differentiation.
-
-**Caloric equation of state** (energy–temperature relation):
-
-$$\frac{1}{T} = \left(\frac{\partial S}{\partial E}\right)_{V,N} = k_B N \cdot \frac{3}{2} \cdot \frac{1}{E} \implies \boxed{U = E = \frac{3}{2}Nk_BT} \tag{14}$$
-
-Each particle contributes $\frac{3}{2}k_BT$ to the energy — $\frac{1}{2}k_BT$ per translational degree of freedom. This is the **equipartition theorem** for the ideal gas.
-
-**Thermal equation of state** (pressure–volume–temperature relation):
-
-$$\frac{P}{T} = \left(\frac{\partial S}{\partial V}\right)_{E,N} = \frac{k_B N}{V} \implies \boxed{PV = Nk_BT} \tag{15}$$
-
-This is the **ideal gas law**, here derived from first principles in statistical mechanics.
-
-**Heat capacity at constant volume:**
-
-$$C_V = \left(\frac{\partial U}{\partial T}\right)_{V,N} = \frac{3}{2}Nk_B \tag{16}$$
-
-**Chemical potential:**
-
-$$\mu = -T\left(\frac{\partial S}{\partial N}\right)_{E,V} = k_BT\ln(\rho\lambda^3) \tag{17}$$
-
-where $\lambda = h/\sqrt{2\pi m k_B T}$ is the thermal de Broglie wavelength. Note that $\mu < 0$ in the classical regime (where $\rho\lambda^3 \ll 1$).
-
-(ch_mce_ss_python_ideal_gas)=
-### Numerical Illustration: The Ideal Gas
-
-Let us verify the Sackur-Tetrode equation numerically and explore how entropy, temperature, and pressure depend on the thermodynamic variables.
-
-````{example} Plotting entropy and equations of state
+The code below simulates flipping $N$ coins many times and shows how the distribution of outcomes sharpens dramatically as $N$ grows.
 
 ```{code-cell} Python
 :tag: hide-input
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.special import gammaln
+from scipy.special import comb
 
-# Constants
-kB = 1.381e-23   # J/K  Boltzmann constant
-h  = 6.626e-34   # J·s  Planck constant
-m  = 4.65e-26    # kg   mass of N2 molecule (~28 amu)
-N  = 1e20        # number of particles (macroscopic but tractable)
+fig, axes = plt.subplots(1, 3, figsize=(14, 4))
 
-def sackur_tetrode(E, V, N):
-    """Return S/N k_B (dimensionless entropy per particle)."""
-    prefactor = (V/N) * (4*np.pi*m*E / (3*N*h**2))**(3/2)
-    return np.log(prefactor) + 5/2
+for ax, N in zip(axes, [10, 100, 1000]):
+    k = np.arange(0, N + 1)
+    # Exact binomial probabilities  p = 1/2
+    prob = comb(N, k, exact=False) / 2**N
 
-# ── Panel 1: S vs E at fixed V, N ──────────────────────────────────────────
-E_vals = np.linspace(0.01, 5, 300) * N * kB * 300   # energies around 300K scale
+    ax.bar(k / N, prob * N, width=1/N, color='steelblue',
+           alpha=0.75, align='center')
+    ax.set_xlabel('Fraction of Heads', fontsize=12)
+    ax.set_ylabel('Probability', fontsize=11)
+    ax.set_title(f'$N = {N}$ coins', fontsize=13)
+    ax.set_xlim(0, 1)
+    ax.axvline(0.5, color='crimson', linestyle='--', lw=1.5,
+               label='Most probable')
+    ax.legend(fontsize=9)
 
-fig, axes = plt.subplots(1, 3, figsize=(15, 4))
+plt.suptitle('Distribution of Heads — the Peak Sharpens with N',
+             fontsize=13, y=1.02)
+plt.tight_layout()
+plt.show()
+```
 
-V0 = 1e-3  # 1 litre
-S_vals = sackur_tetrode(E_vals, V0, N)
+Notice how the distribution becomes sharper and sharper as $N$ increases. For large $N$, the fraction of heads is essentially always exactly $1/2$ — the fluctuations become vanishingly small. This is the statistical origin of the certainty we find in thermodynamics.
 
-axes[0].plot(E_vals / (N * kB), S_vals, 'royalblue', lw=2)
-axes[0].set_xlabel(r'$E\;/\;Nk_B$ (K)', fontsize=12)
-axes[0].set_ylabel(r'$S\;/\;Nk_B$', fontsize=12)
-axes[0].set_title('Entropy vs Energy\n(ideal gas, fixed $V$, $N$)', fontsize=11)
+````
+
++++ { "page-break": true }
++++
+
+(ch_sp_s_fundamental_postulate)=
+## The Fundamental Postulate
+
+(ch_sp_ss_equal_probability)=
+### All Microstates Are Equally Likely
+
+The entire edifice of statistical mechanics rests on one foundational assumption:
+
+```{important}
+**The Fundamental Postulate of Statistical Mechanics:**
+
+An isolated system in equilibrium is equally likely to be found in any one of its accessible microstates.
+
+No accessible microstate is favoured over any other.
+```
+
+This might seem like a very bold claim. Why should we believe it? There are several reasons:
+
+**It is the most unbiased assumption.** If we have no information that distinguishes one microstate from another, it is logically most honest to assign them equal probability. Any other choice would require us to explain why some microstates are preferred.
+
+**It is consistent with the equations of motion.** Liouville's theorem in classical mechanics — and its quantum analogue — shows that the density of phase-space trajectories is conserved as the system evolves. A uniform distribution over accessible microstates is therefore a stationary (time-independent) distribution, consistent with equilibrium.
+
+**It works.** Every prediction derived from this postulate agrees with experiment to extraordinary precision. That is ultimately its strongest justification.
+
+```{note}
+The word "accessible" is important. A microstate is accessible if it is consistent with the known macroscopic constraints — in particular, if it has the right total energy $E$, is confined to the right volume $V$, and contains the right number of particles $N$. Microstates that violate these constraints are not accessible and have zero probability.
+```
+
+(ch_sp_ss_why_most_probable)=
+### Why Systems Settle in the Most Probable Macrostate
+
+Given the fundamental postulate, why do we always observe the *most probable* macrostate?
+
+The answer is pure arithmetic. In a system of $10^{23}$ particles, the most probable macrostate has so many more corresponding microstates than any other macrostate that the probability of ever observing a different macrostate is not just small — it is essentially zero.
+
+To put it concretely: if you released a gas into one half of a box, the probability that all molecules spontaneously return to the left half is $2^{-10^{23}}$ — a number so tiny that even if you waited for a trillion times the age of the universe, it would almost certainly never happen.
+
+This is the statistical origin of the **second law of thermodynamics**: systems evolve towards states of higher probability (higher entropy) and never spontaneously return to states of lower probability.
+
++++ { "page-break": true }
++++
+
+(ch_sp_s_phase_space)=
+## Phase Space: The Arena of Statistical Mechanics
+
+(ch_sp_ss_what_is_phase_space)=
+### What is Phase Space?
+
+To count microstates for a continuous system (like a gas of real atoms), we need a mathematical arena. That arena is **phase space**.
+
+For a single particle moving in three dimensions, we need 6 numbers to specify its state completely: three position coordinates $(x, y, z)$ and three momentum components $(p_x, p_y, p_z)$. Together, these define a single **point** in a 6-dimensional space — the phase space of one particle.
+
+For a system of $N$ particles, the phase space is $6N$-dimensional. A **single point** in this high-dimensional space specifies the complete microstate of the entire system — where every particle is and how fast it is moving.
+
+```{note}
+Phase space is not a physical space — you cannot point to it. It is a mathematical construction that lets us visualise and count microstates. As the system evolves in time, its representative point traces a **trajectory** through phase space, never crossing itself (because the equations of motion have unique solutions).
+```
+
+(ch_sp_ss_energy_surface)=
+### The Energy Surface and the Energy Shell
+
+For an isolated system with fixed total energy $E$, all accessible microstates must satisfy:
+
+$$H(\mathbf{q}, \mathbf{p}) = E$$
+
+where $H$ is the Hamiltonian (total energy function). This condition defines a surface in phase space — the **energy surface** — and the system's trajectory is forever confined to it.
+
+In practice, we always allow a tiny energy uncertainty $\Delta$ (much smaller than $E$), so we work with a thin shell between energies $E$ and $E + \Delta$ rather than an infinitely thin surface. The **volume** of this energy shell is the key quantity we need:
+
+$$\Gamma(E, V, N) = \text{volume of phase space with } E < H(\mathbf{q},\mathbf{p}) < E + \Delta$$
+
+This volume $\Gamma$ counts (in a precise sense) **how many microstates** the system has access to. The larger $\Gamma$, the more microstates are accessible, and — as we will see — the larger the entropy.
+
+::::{tab-set}
+
+:::{tab-item} One Particle in 1D
+For a single particle of mass $m$ moving in one dimension with energy $E$, the Hamiltonian is $H = p^2/2m$. The "energy surface" is just two points: $p = \pm\sqrt{2mE}$. The energy shell has width $\Delta p = m\Delta E / \sqrt{2mE}$ at each point.
+:::
+
+:::{tab-item} One Particle in 3D
+For a single particle in 3D, the energy surface in momentum space is a **sphere** of radius $R = \sqrt{2mE}$. The energy shell is a thin spherical shell of volume $4\pi R^2 \cdot \Delta p \propto E^{1/2}\,\Delta$.
+:::
+
+:::{tab-item} N Particles in 3D
+For $N$ particles, each contributes 3 momentum components. The energy surface in the $3N$-dimensional momentum space is a hypersphere of radius $R = \sqrt{2mE}$. Its "surface area" grows as $E^{(3N/2)-1}$ — an astronomically large number for macroscopic $N$.
+:::
+
+::::
+
++++ { "page-break": true }
++++
+
+(ch_sp_s_entropy)=
+## Entropy: Counting Disorder
+
+(ch_sp_ss_boltzmann)=
+### The Boltzmann Definition
+
+We have seen that some macrostates are more probable than others simply because they correspond to more microstates. Boltzmann had the brilliant idea of capturing this in a single number. In 1877, he proposed:
+
+$$\boxed{S = k_B \ln \Omega}$$
+
+where:
+- $S$ is the **entropy** of the macrostate,
+- $\Omega$ is the **number of microstates** compatible with that macrostate (proportional to the phase-space volume $\Gamma$),
+- $k_B = 1.381 \times 10^{-23}$ J/K is **Boltzmann's constant**, which sets the scale.
+
+This formula is engraved on Boltzmann's tombstone in Vienna. It is one of the most important equations in all of physics.
+
+```{important}
+Entropy is not a mysterious or abstract quantity. It is simply a measure of **how many microstates** are consistent with what we observe macroscopically.
+
+- **High entropy** = many accessible microstates = the system could be in any of a large number of arrangements.
+- **Low entropy** = few accessible microstates = the system is in one of only a small number of highly specific arrangements.
+```
+
+(ch_sp_ss_why_log)=
+### Why the Logarithm?
+
+The logarithm in $S = k_B \ln \Omega$ is not arbitrary. It is chosen for a crucial physical reason: **entropy must be additive**.
+
+If you have two independent systems A and B, their combined entropy should be $S_{A+B} = S_A + S_B$ (total entropy is the sum of parts). But the total number of microstates for two independent systems is the *product*: $\Omega_{A+B} = \Omega_A \times \Omega_B$.
+
+The logarithm converts this product into a sum:
+
+$$S_{A+B} = k_B \ln(\Omega_A \times \Omega_B) = k_B \ln \Omega_A + k_B \ln \Omega_B = S_A + S_B \;\checkmark$$
+
+Any other function of $\Omega$ would fail this requirement.
+
+(ch_sp_ss_entropy_everyday)=
+### Entropy in Everyday Terms
+
+Let us build some intuition with a few everyday examples before turning to physics.
+
+::::{tab-set}
+
+:::{tab-item} A Messy Room
+A tidy room has a very small number of arrangements (everything in exactly the right place). A messy room has an enormous number of arrangements (socks could be on the floor, the desk, the chair...). Entropy is higher for the messy room. The second law says the room will spontaneously become messier over time, never spontaneously tidier — exactly as anyone who has lived in student accommodation can confirm.
+:::
+
+:::{tab-item} Ink in Water
+When you drop a spot of ink into a glass of water, it spreads out and mixes uniformly. The mixed state has vastly more microstates (each ink molecule could be anywhere in the full volume) than the unmixed state (each ink molecule confined to a small spot). The system moves from low entropy to high entropy. It never spontaneously unmixes.
+:::
+
+:::{tab-item} A Gas Expanding
+When a gas expands from a small volume $V_1$ to a larger volume $V_2$, each molecule has more positions available to it. With $N$ molecules, the number of accessible microstates increases by $(V_2/V_1)^N$ — an unimaginably large factor for any macroscopic gas. The entropy increase is $\Delta S = Nk_B \ln(V_2/V_1)$.
+:::
+
+:::{tab-item} A Perfect Crystal at 0 K
+A perfect crystal at absolute zero has just one accessible microstate: every atom is sitting at its precise lattice site, not vibrating. $\Omega = 1$, so $S = k_B \ln 1 = 0$. This is the **third law of thermodynamics**: the entropy of a perfect crystal at absolute zero is zero.
+:::
+
+::::
+
+````{example} Entropy of mixing — visualised
+
+The code below computes and plots how the entropy of a gas increases when its volume expands — a direct illustration of $S = k_B \ln \Omega$.
+
+```{code-cell} Python
+:tag: hide-input
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+kB = 1.381e-23   # J/K
+N  = 1e20        # number of molecules
+
+V1 = 1.0   # initial volume (arbitrary units)
+V_ratios = np.linspace(1, 10, 300)
+
+# Entropy change when volume increases from V1 to V2 = ratio * V1
+delta_S = N * kB * np.log(V_ratios)
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
+
+# ── Left: ΔS vs volume ratio ──────────────────────────────────────────────
+axes[0].plot(V_ratios, delta_S / kB, color='steelblue', lw=2.5)
+axes[0].fill_between(V_ratios, delta_S / kB, alpha=0.15, color='steelblue')
+axes[0].set_xlabel(r'Volume ratio $V_2 / V_1$', fontsize=12)
+axes[0].set_ylabel(r'$\Delta S \;/\; k_B$', fontsize=12)
+axes[0].set_title('Entropy Increase on Expansion\n'
+                  r'$\Delta S = N k_B \ln(V_2/V_1)$', fontsize=12)
 axes[0].grid(True, alpha=0.3)
 
-# ── Panel 2: T vs E (caloric equation of state) ────────────────────────────
-T_vals = (2/3) * E_vals / (N * kB)   # E = (3/2) N kB T  →  T = 2E/(3NkB)
+# ── Right: Cartoon — accessible phase space grows ─────────────────────────
+ax = axes[1]
+ax.set_xlim(0, 10)
+ax.set_ylim(0, 5)
+ax.set_aspect('equal')
+ax.axis('off')
+ax.set_title('Accessible microstates grow\nwhen volume increases',
+             fontsize=12)
 
-axes[1].plot(E_vals / (N * kB), T_vals, 'tomato', lw=2)
-axes[1].set_xlabel(r'$E\;/\;Nk_B$ (K)', fontsize=12)
-axes[1].set_ylabel(r'Temperature $T$ (K)', fontsize=12)
-axes[1].set_title('Caloric Equation of State\n$E = \\frac{3}{2}Nk_BT$', fontsize=11)
-axes[1].grid(True, alpha=0.3)
+# Small box (before expansion)
+small = plt.Rectangle((0.5, 1.5), 2, 2, linewidth=2,
+                       edgecolor='steelblue', facecolor='#dbeafe')
+ax.add_patch(small)
+ax.text(1.5, 2.5, r'$V_1$', ha='center', va='center',
+        fontsize=14, color='steelblue')
+ax.text(1.5, 1.2, r'$\Omega_1$ microstates', ha='center',
+        fontsize=9, color='steelblue')
 
-# ── Panel 3: PV/NkBT vs T (should = 1 for ideal gas) ─────────────────────
-T_range = np.linspace(100, 1000, 200)
-# P/T = kB N / V  →  PV/(NkBT) = 1  (ideal gas law check)
-PV_over_NkT = np.ones_like(T_range)  # identically 1 by construction
+# Arrow
+ax.annotate('', xy=(4.5, 2.5), xytext=(3.0, 2.5),
+            arrowprops=dict(arrowstyle='->', color='gray', lw=2))
+ax.text(3.75, 2.8, 'expand', ha='center', fontsize=10, color='gray')
 
-axes[2].plot(T_range, PV_over_NkT, 'seagreen', lw=2)
-axes[2].axhline(1, color='k', lw=0.8, linestyle='--', alpha=0.5)
-axes[2].set_ylim(0.8, 1.2)
-axes[2].set_xlabel(r'Temperature $T$ (K)', fontsize=12)
-axes[2].set_ylabel(r'$PV\;/\;Nk_BT$', fontsize=12)
-axes[2].set_title('Ideal Gas Law\n$PV = Nk_BT$', fontsize=11)
-axes[2].grid(True, alpha=0.3)
+# Large box (after expansion)
+large = plt.Rectangle((4.5, 0.5), 4, 4, linewidth=2,
+                       edgecolor='tomato', facecolor='#fee2e2')
+ax.add_patch(large)
+ax.text(6.5, 2.5, r'$V_2 > V_1$', ha='center', va='center',
+        fontsize=14, color='tomato')
+ax.text(6.5, 0.2, r'$\Omega_2 \gg \Omega_1$ microstates', ha='center',
+        fontsize=9, color='tomato')
 
-plt.suptitle('Classical Ideal Gas — Microcanonical Ensemble', fontsize=13, y=1.02)
 plt.tight_layout()
 plt.show()
 ```
 ````
 
++++ { "page-break": true }
++++
+
+(ch_sp_s_temperature)=
+## Temperature: What Does It Really Mean?
+
+(ch_sp_ss_two_systems)=
+### Heat Flow Between Two Systems
+
+We now ask: if two systems are placed in thermal contact and allowed to exchange energy, what determines how they share that energy at equilibrium?
+
+Consider two systems, 1 and 2, with energies $E_1$ and $E_2$ and entropies $S_1$ and $S_2$. Their total energy is fixed: $E_1 + E_2 = E = \text{const}$. Energy can flow back and forth, but the total is conserved.
+
+The combined system will settle into the **most probable state**, which means the state with the **maximum total number of microstates**, i.e., the state that maximises the total entropy $S_1 + S_2$.
+
+When we work out the mathematics of this maximisation, we find that at equilibrium:
+
+$$\left(\frac{\partial S_1}{\partial E_1}\right)_{V,N} = \left(\frac{\partial S_2}{\partial E_2}\right)_{V,N}$$
+
+In other words, equilibrium requires that both systems have **the same rate of change of entropy with energy**. This common value is what we define as the inverse temperature:
+
+$$\boxed{\frac{1}{T} \equiv \left(\frac{\partial S}{\partial E}\right)_{V,N}}$$
+
+(ch_sp_ss_temperature_meaning)=
+### The Physical Meaning of Temperature
+
+This definition might look abstract, but it has a beautifully simple physical interpretation.
+
+$\partial S / \partial E$ measures how rapidly the number of accessible microstates *increases* when you add a little energy to the system. Think of it as the system's **appetite for energy**:
+
+- A system with a **large** $\partial S/\partial E$ (low $T$) has a strong appetite — adding energy dramatically increases the number of accessible microstates.
+- A system with a **small** $\partial S/\partial E$ (high $T$) has a weak appetite — it already has so many accessible microstates that adding more energy barely changes the count.
+
+**Heat flows from high $T$ to low $T** because it increases the total entropy:**
+
+When a hot system (small $\partial S/\partial E$) transfers energy to a cold system (large $\partial S/\partial E$), the cold system gains more entropy than the hot system loses. The total entropy increases. This process is spontaneous. The reverse — heat flowing from cold to hot — would *decrease* total entropy and never happens spontaneously.
+
+```{note}
+For an ideal gas, this definition gives $T = \frac{2E}{3Nk_B}$, which means $k_BT \approx \frac{2}{3}$ of the average kinetic energy per particle. Temperature is therefore a measure of the **average kinetic energy of the particles** — the familiar result from kinetic theory, but now derived from first principles.
+```
+
+(ch_sp_ss_zeroth_law)=
+### The Zeroth Law of Thermodynamics
+
+The definition of temperature as the quantity equalised at thermal equilibrium immediately implies the **zeroth law of thermodynamics**:
+
+```{important}
+**Zeroth Law:** If system A is in thermal equilibrium with system B, and system B is in thermal equilibrium with system C, then A and C are also in thermal equilibrium with each other.
+
+This makes temperature a well-defined, transitive property — the basis for the very concept of a thermometer.
+```
+
++++ { "page-break": true }
++++
+
+(ch_sp_s_pressure_first_law)=
+## Pressure, Chemical Potential, and the First Law
+
+(ch_sp_ss_pressure)=
+### Where Does Pressure Come From?
+
+Just as temperature was defined by asking what is equalised when two systems can exchange *energy*, we can define **pressure** by asking what is equalised when two systems can exchange *volume*.
+
+Imagine two chambers separated by a movable, thermally insulating piston. The total volume $V_1 + V_2 = V$ is fixed, but the piston can slide, exchanging volume between the two sides. The system maximises total entropy, which gives the equilibrium condition:
+
+$$\left(\frac{\partial S_1}{\partial V_1}\right)_{E,N} = \left(\frac{\partial S_2}{\partial V_2}\right)_{E,N}$$
+
+The common value of this derivative defines pressure through $P/T = (\partial S/\partial V)_{E,N}$. Microscopically, pressure arises because moving the wall gives the particles more space to occupy — more accessible microstates — and the system pushes in the direction that increases its entropy.
+
+(ch_sp_ss_chemical_potential)=
+### Chemical Potential
+
+Similarly, if two systems can exchange **particles**, the equilibrium condition involves the **chemical potential** $\mu$, defined through:
+
+$$-\frac{\mu}{T} \equiv \left(\frac{\partial S}{\partial N}\right)_{E,V}$$
+
+Particles flow from regions of high chemical potential to low chemical potential, just as heat flows from high temperature to low temperature.
+
+(ch_sp_ss_first_law)=
+### The First Law of Thermodynamics
+
+Putting together the definitions of temperature, pressure, and chemical potential, we can write a single equation that expresses how the internal energy $U$ changes when the macroscopic state of the system changes:
+
+$$\boxed{dU = T\,dS - P\,dV + \mu\,dN}$$
+
+This is the **first law of thermodynamics** — the conservation of energy — but written in a form that makes explicit the three ways energy can change:
+
+::::{tab-set}
+
+:::{tab-item} Heat: $T\,dS$
+Adding heat $dQ = T\,dS$ to the system increases its internal energy by increasing the entropy (increasing the number of accessible microstates). This is energy transferred *randomly* at the microscopic level.
+:::
+
+:::{tab-item} Work: $-P\,dV$
+Compressing the system (decreasing $V$) does work $dW = -P\,dV$ on it, increasing its energy. This is energy transferred *systematically* — by pushing the wall.
+:::
+
+:::{tab-item} Particles: $\mu\,dN$
+Adding particles changes the energy by $\mu\,dN$. In many problems $N$ is fixed ($dN = 0$) and this term drops out, giving the simpler form $dU = T\,dS - P\,dV$.
+:::
+
+::::
+
+```{important}
+The first law is a statement of **energy conservation**. Energy cannot be created or destroyed — it can only be converted between heat, work, and the energy carried by particles. Statistical mechanics gives this law a microscopic foundation: it emerges from the definitions of $T$, $P$, and $\mu$ through the entropy function $S(E, V, N)$.
+```
+
++++ { "page-break": true }
++++
+
+(ch_sp_s_second_law)=
+## The Second Law: Entropy Always Increases
+
+(ch_sp_ss_statement)=
+### The Statement
+
+The second law of thermodynamics is one of the most profound statements in all of science:
+
+```{important}
+**Second Law of Thermodynamics:** The total entropy of an isolated system can never decrease. For any spontaneous process:
+
+$$\Delta S_{\text{total}} \geq 0$$
+
+Equality holds only for perfectly reversible (ideal, quasi-static) processes.
+```
+
+From the statistical viewpoint, this is not mysterious at all. An isolated system evolves randomly through its accessible microstates. There are enormously many more microstates corresponding to the high-entropy macrostate than to any low-entropy macrostate. So the system almost always moves towards higher entropy — not because of any driving force, but simply because of the overwhelming weight of numbers.
+
+(ch_sp_ss_arrow_of_time)=
+### The Arrow of Time
+
+The second law gives time its **direction**. The microscopic laws of physics (Newton's laws, quantum mechanics) are perfectly symmetric in time — if you filmed a single particle bouncing, you could not tell if the film was playing forwards or backwards. But if you filmed a gas expanding into a vacuum and played it backwards, the absurdity would be immediately obvious.
+
+This asymmetry is entirely statistical. The expanding gas visits ever more probable macrostates. The reversed film would show a journey towards an astronomically improbable macrostate — possible in principle, but never observed in practice.
+
+(ch_sp_ss_free_expansion)=
+### Free Expansion as an Example
+
+A gas occupies the left half of a box. The right half is empty (vacuum). The partition is suddenly removed.
+
+- **Before:** all $N$ molecules confined to volume $V/2$. Few accessible microstates.
+- **After:** all $N$ molecules free to move in volume $V$. Each molecule has twice as many positions available. The number of accessible microstates increases by $(2)^N = 2^{10^{23}}$ — an unimaginably enormous factor.
+
+The entropy increase is:
+
+$$\Delta S = Nk_B \ln 2$$
+
+For one mole of gas, this is about $5.8$ J/K — a macroscopically measurable entropy increase. The gas never spontaneously contracts back to the left half.
+
+````{example} Free expansion — entropy change with volume
+
 ```{code-cell} Python
 :tag: hide-input
 
 import numpy as np
 import matplotlib.pyplot as plt
 
-# ─── Entropy per particle as a function of V/N (at fixed T) ───────────────
-kB = 1.381e-23
-h  = 6.626e-34
-m  = 4.65e-26   # N2
+kB   = 1.381e-23    # J/K
+N_A  = 6.022e23     # Avogadro's number
+n_moles = np.array([0.001, 0.01, 0.1, 1.0, 10.0])  # moles of gas
+N_particles = n_moles * N_A
 
-T = 300   # K
-# From E = (3/2)N kB T:  E/N = (3/2) kB T
-# Sackur-Tetrode: S/NkB = ln[(V/N)(4πm(3/2 NkBT)/(3Nh²))^{3/2}] + 5/2
-#                       = ln[(V/N) / λ³] + 5/2
-# thermal de Broglie wavelength
-lam = h / np.sqrt(2 * np.pi * m * kB * T)
-print(f"Thermal de Broglie wavelength at {T} K: λ = {lam:.3e} m")
+V_ratios = np.linspace(1.0, 4.0, 300)
 
-rho_range = np.logspace(20, 27, 300)   # particles per m³
-V_over_N  = 1.0 / rho_range
+fig, ax = plt.subplots(figsize=(8, 5))
 
-S_over_NkB = np.log(V_over_N / lam**3) + 5/2
+colors = ['#93c5fd', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a']
+for n_mol, N, color in zip(n_moles, N_particles, colors):
+    dS = N * kB * np.log(V_ratios)   # in J/K
+    ax.plot(V_ratios, dS, color=color, lw=2,
+            label=f'{n_mol} mol  ($N={n_mol:.3g}N_A$)')
 
-fig, ax = plt.subplots(figsize=(7, 4.5))
-ax.semilogx(rho_range, S_over_NkB, 'darkorchid', lw=2)
-ax.axvline(1/lam**3, color='red', linestyle='--', lw=1.2,
-           label=r'$\rho\lambda^3 = 1$ (classical breakdown)')
-ax.axhline(0, color='gray', linestyle=':', lw=0.8, label='$S = 0$')
-ax.fill_betweenx([-5, S_over_NkB.min()], 1/lam**3, rho_range.max(),
-                 alpha=0.15, color='red', label='Quantum regime')
-ax.set_xlabel(r'Number density $\rho = N/V$ (m$^{-3}$)', fontsize=12)
-ax.set_ylabel(r'$S\;/\;Nk_B$', fontsize=12)
-ax.set_title(f'Sackur-Tetrode Entropy vs Density at $T = {T}$ K', fontsize=12)
-ax.legend(fontsize=10)
-ax.set_ylim(-5, 20)
+ax.axvline(2.0, color='gray', linestyle='--', alpha=0.6, lw=1.2)
+ax.text(2.05, ax.get_ylim()[0] * 0.9 if ax.get_ylim()[0] > 0 else 0.1,
+        'Doubles\n(free expansion\ninto equal vacuum)',
+        fontsize=8.5, color='gray')
+
+ax.set_xlabel(r'Volume ratio $V_{\rm final} / V_{\rm initial}$', fontsize=12)
+ax.set_ylabel(r'Entropy change $\Delta S$  (J/K)', fontsize=12)
+ax.set_title('Entropy Increase During Expansion', fontsize=13)
+ax.legend(fontsize=9, loc='upper left')
 ax.grid(True, alpha=0.3)
 plt.tight_layout()
 plt.show()
-
-# Atmospheric density
-rho_atm = 2.7e25   # m^{-3}
-S_atm   = np.log(1/rho_atm / lam**3) + 5/2
-print(f"At atmospheric density: S/(NkB) = {S_atm:.3f}")
-print(f"ρλ³ = {rho_atm * lam**3:.3e}  (≪ 1: classical regime valid)")
 ```
-
 ````
 
-The red dashed line marks $\rho\lambda^3 = 1$, where the classical ideal gas description breaks down and quantum statistics must be used. At atmospheric conditions for N₂, $\rho\lambda^3 \approx 10^{-6} \ll 1$, confirming that classical mechanics is an excellent approximation.
++++ { "page-break": true }
++++
 
-(ch_mce_s_gibbs_paradox)=
-## The Gibbs Paradox
+(ch_sp_s_ideal_gas)=
+## The Classical Ideal Gas
 
-(ch_mce_ss_problem)=
-### The Problem: Non-Extensive Entropy
+Now we apply the full statistical mechanics framework to the most important example: the **classical ideal gas**. This is a gas of $N$ identical, non-interacting particles in a box of volume $V$, with total energy $E$.
 
-If we naively ignore the factor of $N!$ (i.e., treat the particles as distinguishable), the entropy of the ideal gas becomes:
+"Non-interacting" means the particles do not push or pull on each other — they only feel the walls of the box. This is an excellent approximation for low-density gases at high temperature (like ordinary air at room conditions).
 
-$$S_{\text{classical}} = k_BN\left[\ln\!\left(\frac{(2\pi m E)^{3/2} V}{h^{3N}}\cdot\frac{1}{\Gamma(3N/2+1)}\right)\right] \approx k_BN\left[\ln\!\left(V\left(\frac{4\pi mE}{3Nh^2}\right)^{3/2}\right) + \frac{3}{2}\right]$$
+(ch_sp_ss_counting)=
+### Counting Microstates
 
-Note that the volume $V$ appears instead of $V/N$. This means $S_{\text{classical}}$ is **not extensive**: if we double both $E$, $V$, and $N$, we get:
+For the ideal gas, the total energy is just the sum of kinetic energies of all particles:
 
-$$S_{\text{classical}}(2E, 2V, 2N) = 2Nk_B\left[\ln\!\left(2V\left(\frac{4\pi m \cdot 2E}{3 \cdot 2N h^2}\right)^{3/2}\right) + \frac{3}{2}\right] \neq 2\,S_{\text{classical}}(E, V, N)$$
+$$E = \sum_{i=1}^{N} \frac{\mathbf{p}_i^2}{2m}$$
 
-The entropy contains a spurious additive term $2Nk_B\ln 2$.
+where $\mathbf{p}_i$ is the momentum of particle $i$ and $m$ is its mass.
 
-(ch_mce_ss_mixing_paradox)=
-### Mixing Entropy and the Paradox
+The constraint $H = E$ defines a hypersphere in the $3N$-dimensional momentum space with radius $R = \sqrt{2mE}$. Multiplying by the position space volume $V^N$ (each of the $N$ particles can be anywhere in the box), the total accessible phase-space volume is:
 
-The paradox is sharpest when considering the **mixing** of two identical ideal gases. Imagine a container divided by a partition, with the same gas at the same temperature, pressure, and density on both sides. When the partition is removed, intuitively **nothing changes** — the gas is the same on both sides. The entropy should not change.
+$$\Phi(E, V, N) = V^N \times \left(\text{volume of a }3N\text{-dimensional sphere of radius }\sqrt{2mE}\right)$$
 
-However, with distinguishable particles:
+The volume of a hypersphere in $n$ dimensions with radius $R$ is $\frac{\pi^{n/2}}{\Gamma(n/2+1)} R^n$, giving:
 
-$$\Delta S_{\text{mix}} = Nk_B\ln 2 + Nk_B\ln 2 = 2Nk_B\ln 2 > 0$$
+$$\Phi(E, V, N) = V^N \cdot \frac{\pi^{3N/2}}{\Gamma\!\left(\frac{3N}{2}+1\right)} \cdot (2mE)^{3N/2}$$
 
-This is the **Gibbs paradox** (1875): the entropy increases upon mixing two identical gases, which is physically wrong. If the gases were different, a positive $\Delta S_{\text{mix}}$ would be correct (and is the entropy of mixing familiar from chemistry). But for identical gases, there should be no entropy change.
+(ch_sp_ss_sackur_tetrode)=
+### The Sackur-Tetrode Equation
 
-```{note}
-The entropy of mixing two *different* ideal gases (Dalton's law situation) is genuinely positive:
-$$\Delta S_{\text{mix}} = -Nk_B(x_1 \ln x_1 + x_2 \ln x_2) > 0$$
-where $x_i = N_i/N$ are mole fractions. This is physically correct and measurable. The Gibbs paradox arises only when the two gases are *identical*.
+Taking the logarithm and using the correct normalisation $\Gamma_0 = h^{3N} N!$ (more on the $N!$ shortly), the entropy of the ideal gas works out to be:
+
+$$\boxed{S(E, V, N) = Nk_B \left[\,\ln\!\left(\frac{V}{N}\left(\frac{4\pi m E}{3Nh^2}\right)^{3/2}\right) + \frac{5}{2}\right]}$$
+
+This is the **Sackur-Tetrode equation** (1912), independently derived by Hugo Sackur and Otto Tetrode. It is the complete entropy of a monatomic classical ideal gas.
+
+From this single equation, all thermodynamic properties of the ideal gas follow by differentiation.
+
+(ch_sp_ss_equations_of_state)=
+### Everything Follows from Entropy
+
+::::{tab-set}
+
+:::{tab-item} Temperature
+Differentiating $S$ with respect to $E$ at fixed $V$ and $N$:
+
+$$\frac{1}{T} = \frac{\partial S}{\partial E}\bigg|_{V,N} \implies \boxed{U = E = \frac{3}{2}Nk_BT}$$
+
+Each particle contributes $\frac{3}{2}k_BT$ to the total energy — $\frac{1}{2}k_BT$ for each of its three translational degrees of freedom. This is the **equipartition theorem**.
+:::
+
+:::{tab-item} Pressure
+Differentiating $S$ with respect to $V$ at fixed $E$ and $N$:
+
+$$\frac{P}{T} = \frac{\partial S}{\partial V}\bigg|_{E,N} \implies \boxed{PV = Nk_BT}$$
+
+This is the **ideal gas law** — derived entirely from counting microstates, with no empirical input!
+:::
+
+:::{tab-item} Heat Capacity
+Since $U = \frac{3}{2}Nk_BT$, the heat capacity at constant volume is:
+
+$$\boxed{C_V = \frac{\partial U}{\partial T}\bigg|_{V,N} = \frac{3}{2}Nk_B}$$
+
+This means it takes $\frac{3}{2}k_B \approx 2.07 \times 10^{-23}$ J of heat to raise the temperature of each molecule by 1 K.
+:::
+
+:::{tab-item} Speed of Sound
+Using $C_P = C_V + Nk_B = \frac{5}{2}Nk_B$ and $\gamma = C_P/C_V = 5/3$, the speed of sound in the gas is:
+
+$$v_s = \sqrt{\frac{\gamma k_BT}{m}} = \sqrt{\frac{5k_BT}{3m}}$$
+
+For nitrogen at room temperature ($T = 293$ K, $m = 4.65\times10^{-26}$ kg), this gives $v_s \approx 350$ m/s — in good agreement with the measured value of 343 m/s.
+:::
+
+::::
+
+````{example} The ideal gas law from statistical mechanics
+
+```{code-cell} Python
+:tag: hide-input
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+kB  = 1.381e-23   # J/K
+N   = 6.022e23    # 1 mole of molecules
+m   = 4.65e-26    # kg (N2)
+
+T_vals = np.linspace(100, 1000, 300)   # K
+V      = 22.4e-3                        # m³ (molar volume at STP)
+
+# Ideal gas law: P = N kB T / V
+P_vals = N * kB * T_vals / V
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
+
+# ── Left: P vs T (ideal gas law) ──────────────────────────────────────────
+axes[0].plot(T_vals, P_vals / 1e5, color='royalblue', lw=2.5)
+axes[0].axvline(273, color='gray', linestyle='--', lw=1.2, alpha=0.7,
+                label='$T = 273$ K (STP)')
+axes[0].axhline(1.0, color='tomato', linestyle='--', lw=1.2, alpha=0.7,
+                label='$P = 1$ atm')
+axes[0].set_xlabel('Temperature $T$ (K)', fontsize=12)
+axes[0].set_ylabel('Pressure $P$ (bar)', fontsize=12)
+axes[0].set_title('Ideal Gas Law: $PV = Nk_BT$\n'
+                  '(1 mole, $V = 22.4$ L fixed)', fontsize=12)
+axes[0].legend(fontsize=10)
+axes[0].grid(True, alpha=0.3)
+
+# ── Right: Average kinetic energy per particle ────────────────────────────
+KE_per_particle = 1.5 * kB * T_vals   # J
+axes[1].plot(T_vals, KE_per_particle / kB, color='seagreen', lw=2.5,
+             label=r'$\langle \epsilon \rangle = \frac{3}{2}k_BT$')
+axes[1].set_xlabel('Temperature $T$ (K)', fontsize=12)
+axes[1].set_ylabel(r'$\langle \epsilon \rangle / k_B$  (K)', fontsize=12)
+axes[1].set_title('Equipartition Theorem\n'
+                  r'Average KE per particle $= \frac{3}{2}k_BT$', fontsize=12)
+axes[1].legend(fontsize=11)
+axes[1].grid(True, alpha=0.3)
+
+plt.suptitle('Classical Ideal Gas — Statistical Mechanics Results',
+             fontsize=13, y=1.02)
+plt.tight_layout()
+plt.show()
+
+# Print numerical checks
+print(f"At T = 273 K, P = {N*kB*273/V/1e5:.4f} bar  (should be ~1.00)")
+print(f"Average KE per N2 molecule at 300 K: "
+      f"{1.5*kB*300:.3e} J  = {1.5*kB*300/(1.602e-19)*1000:.2f} meV")
 ```
+````
 
-(ch_mce_ss_resolution)=
-### Resolution: Indistinguishability and the $N!$ Factor
++++ { "page-break": true }
++++
 
-The resolution of the Gibbs paradox is the **indistinguishability** of identical particles. If particles are quantum mechanically identical, then permuting two particles does not create a new microstate — it produces the same physical state. The number of **physically distinct** microstates is therefore $\Gamma_{\text{physical}} = \Gamma_{\text{naive}}/N!$.
+(ch_sp_s_gibbs_paradox)=
+## The Gibbs Paradox and Indistinguishability
 
-With the correct $\Gamma_0(N) = h^{3N}N!$, the Sackur-Tetrode entropy (13) is explicitly extensive (it depends on $V/N$, not $V$), and:
+(ch_sp_ss_the_puzzle)=
+### A Surprising Puzzle
 
-$$\Delta S_{\text{mix}} = 0$$
+Here is a thought experiment that reveals something deep about the nature of identical particles.
 
-for mixing of identical gases at equal $T$, $P$ — as it should be.
+Take a box divided by a partition. On the left: $N/2$ molecules of gas A at temperature $T$ and pressure $P$. On the right: $N/2$ molecules of gas B, *also* at temperature $T$ and pressure $P$. Now remove the partition.
+
+If A and B are **different gases** (say, nitrogen and oxygen), the gases mix, and the entropy increases. This is the **entropy of mixing** — a real, measurable effect. You can verify it by noting that you now need to do work to separate them again.
+
+But what if A and B are **the same gas** — say, nitrogen on both sides? When you remove the partition, nothing observable happens. The gas on both sides was already at the same temperature, pressure, and density. The system is in equilibrium both before and after.
+
+**The entropy should not change.** And yet if you naively count microstates by treating the molecules as distinguishable labelled particles (as classical mechanics suggests), you find a spurious entropy increase of $\Delta S = Nk_B \ln 2 > 0$ — as if mixing two identical gases were somehow different from having one big container of gas. This is the **Gibbs paradox**, noticed by Josiah Willard Gibbs in 1875.
+
+(ch_sp_ss_resolution)=
+### The Resolution: Particles Are Indistinguishable
+
+The resolution is both simple and profound: **identical particles are not distinguishable**.
+
+In quantum mechanics, two electrons, two nitrogen molecules, or any two identical particles are not merely similar — they are in principle completely indistinguishable. There is no experiment, even in principle, that can tell "molecule number 347" from "molecule number 8,193" if both are nitrogen molecules in the same quantum state.
+
+This means that if you swap two identical particles, you have not created a new microstate — you have the **same** microstate. To correctly count microstates, we must divide by the number of ways we can permute $N$ identical particles, which is $N!$ (N factorial):
+
+$$\Omega_{\text{correct}} = \frac{\Omega_{\text{naive}}}{N!}$$
+
+With this correction, the entropy becomes:
+
+$$S_{\text{correct}}(E, V, N) = Nk_B \left[\ln\left(\frac{V}{N}\cdot \left(\frac{4\pi mE}{3Nh^2}\right)^{3/2}\right) + \frac{5}{2}\right]$$
+
+Notice that the volume appears as $V/N$ (volume per particle), not $V$. This makes the entropy **extensive** — proportional to $N$ when $E/N$ and $V/N$ are held fixed — and the mixing entropy for two identical gases is exactly zero.
 
 ```{important}
-The Gibbs paradox reveals that even a classical system cannot be treated without incorporating a quantum mechanical input: the indistinguishability of identical particles. The factor $N!$ is not an arbitrary "fudge" — it is dictated by the deep structure of quantum mechanics and is absolutely necessary for a self-consistent thermodynamics.
+The Gibbs paradox reveals that statistical mechanics cannot be done purely classically. Even when the particles themselves move according to classical mechanics (which is fine at high temperature and low density), the **counting** of microstates must respect quantum indistinguishability. The factor $N!$ is a quantum input into an otherwise classical calculation.
+
+Without it, the entropy is not extensive, and thermodynamics breaks down.
 ```
 
-(ch_mce_ss_python_gibbs)=
-### Numerical Illustration: Entropy of Mixing
+(ch_sp_ss_mixing_summary)=
+### What Happens for Different Gases?
+
+When genuinely different gases mix, the entropy increase is real and is given by:
+
+$$\Delta S_{\text{mix}} = -Nk_B\bigl(x_1 \ln x_1 + x_2 \ln x_2\bigr)$$
+
+where $x_1 = N_1/N$ and $x_2 = N_2/N$ are the mole fractions. For equal amounts ($x_1 = x_2 = 1/2$), this gives $\Delta S = Nk_B \ln 2 > 0$. This entropy of mixing is the thermodynamic reason why spontaneous mixing of different gases is irreversible.
 
 ````{example} Gibbs paradox visualised
 
@@ -662,183 +722,220 @@ The Gibbs paradox reveals that even a classical system cannot be treated without
 import numpy as np
 import matplotlib.pyplot as plt
 
-def S_sackur(N, V, T, m, kB, h):
-    """Sackur-Tetrode entropy (correct, with N!)."""
-    lam = h / np.sqrt(2 * np.pi * m * kB * T)
-    return N * kB * (np.log((V/N) / lam**3) + 5/2)
-
-def S_classical(N, V, T, m, kB, h):
-    """Entropy without N! (wrong for identical particles)."""
-    lam = h / np.sqrt(2 * np.pi * m * kB * T)
-    return N * kB * (np.log(V / lam**3) + 5/2 - np.log(N))
-    # Note: the -ln(N) above comes from Stirling but not the N! denominator;
-    # without N! at all: S_wrong = N kB [ln(V/λ³) + 3/2]
-
 kB = 1.381e-23
-h  = 6.626e-34
-m  = 4.65e-26  # N2
-T  = 300.0     # K
+N  = 1e20   # particles
 
-N_vals = np.logspace(10, 23, 200)
-V      = 1e-3   # 1 litre total (half on each side before mixing)
+x1_vals = np.linspace(0.001, 0.999, 300)
+x2_vals = 1.0 - x1_vals
 
-# Before mixing: two halves, each with N/2 particles in V/2
-# After mixing: N particles in V  (same gas, same T and rho)
-dS_correct  = np.array([S_sackur(N, V, T, m, kB, h)
-                         - 2*S_sackur(N/2, V/2, T, m, kB, h)
-                         for N in N_vals])
+# Entropy of mixing for DIFFERENT gases (real, positive)
+dS_mix_different = -N * kB * (x1_vals * np.log(x1_vals) +
+                               x2_vals * np.log(x2_vals))
 
-dS_wrong    = np.array([
-    (N * kB * np.log(V) - 2*(N/2)*kB*np.log(V/2))   # simplified S_wrong ~ NkB ln V
-    for N in N_vals])
+# Spurious entropy for SAME gas WITHOUT N! correction
+# ΔS_wrong = N kB [x1 ln(1/x1) + x2 ln(1/x2)]  same formula!
+dS_wrong_same = -N * kB * (x1_vals * np.log(x1_vals) +
+                             x2_vals * np.log(x2_vals))
+
+# Correct entropy for SAME gas WITH N! correction = 0
+dS_correct_same = np.zeros_like(x1_vals)
 
 fig, ax = plt.subplots(figsize=(8, 5))
-ax.semilogx(N_vals, dS_correct / kB, 'royalblue', lw=2,
-            label=r'Correct ($N!$ included): $\Delta S = 0$')
-ax.semilogx(N_vals, dS_wrong / kB, 'tomato', lw=2, linestyle='--',
-            label=r'Wrong (no $N!$): $\Delta S = N\ln 2$')
-ax.axhline(0, color='k', lw=0.8, linestyle=':')
-ax.set_xlabel('Number of particles $N$', fontsize=12)
-ax.set_ylabel(r'$\Delta S_{\rm mix}\;/\;k_B$', fontsize=12)
-ax.set_title('Gibbs Paradox: Entropy of Mixing Identical Ideal Gases', fontsize=12)
-ax.legend(fontsize=11)
+
+ax.plot(x1_vals, dS_mix_different / (N * kB), lw=2.5, color='royalblue',
+        label='Different gases (correct: $\\Delta S > 0$)')
+ax.plot(x1_vals, dS_wrong_same / (N * kB), lw=2, color='tomato',
+        linestyle='--', label='Same gas without $N!$ (wrong: $\\Delta S > 0$)')
+ax.plot(x1_vals, dS_correct_same, lw=2.5, color='seagreen',
+        label='Same gas with $N!$ (correct: $\\Delta S = 0$)')
+
+ax.set_xlabel(r'Mole fraction $x_1$', fontsize=12)
+ax.set_ylabel(r'$\Delta S_{\rm mix}\;/\;Nk_B$', fontsize=12)
+ax.set_title('Gibbs Paradox: Entropy of Mixing', fontsize=13)
+ax.legend(fontsize=10)
 ax.grid(True, alpha=0.3)
+ax.set_xlim(0, 1)
+ax.set_ylim(-0.05, 0.75)
+
+ax.annotate('Gibbs paradox:\nspurious entropy\nfor identical gases',
+            xy=(0.5, 0.693), xytext=(0.65, 0.45),
+            fontsize=9, color='tomato',
+            arrowprops=dict(arrowstyle='->', color='tomato', lw=1.5))
+
 plt.tight_layout()
 plt.show()
 ```
 ````
 
-The blue curve (correct result with $N!$) gives exactly $\Delta S = 0$ for all $N$, while the red curve (without $N!$) gives a spurious entropy increase growing with system size — the Gibbs paradox in full display.
++++ { "page-break": true }
++++
+
+(ch_sp_s_ensembles_preview)=
+## A Preview: The Three Ensembles
+
+The microcanonical ensemble — the framework we have built throughout this chapter — describes a system that is **completely isolated**: fixed $E$, $V$, and $N$. It is the most fundamental ensemble, but it is often the most difficult to work with in practice, because real experiments rarely fix the energy exactly.
+
+Statistical mechanics has developed two other ensembles, each suited to a different experimental situation. All three give the same thermodynamic results in the limit of large $N$.
+
+```{list-table} The Three Ensembles of Statistical Mechanics
+:header-rows: 1
+:widths: 20 20 20 20 20
+
+* - Ensemble
+  - Fixed quantities
+  - Fluctuating quantity
+  - Thermodynamic potential
+  - Best suited for
+* - **Microcanonical**
+  - $E$, $V$, $N$
+  - (nothing)
+  - Entropy $S$
+  - Isolated systems; conceptual foundations
+* - **Canonical**
+  - $T$, $V$, $N$
+  - Energy $E$
+  - Free energy $F = U - TS$
+  - Systems in contact with a heat bath; most practical calculations
+* - **Grand Canonical**
+  - $T$, $V$, $\mu$
+  - Energy $E$ and particle number $N$
+  - Grand potential $\Omega = F - \mu N$
+  - Open systems; quantum gases; chemical reactions
+```
+
+The microcanonical ensemble answers the question: *given fixed energy, what are the equilibrium properties?*
+
+The canonical ensemble answers: *given fixed temperature (heat bath), what are the equilibrium properties?*
+
+The grand canonical ensemble answers: *given fixed temperature and chemical potential (heat and particle reservoir), what are the equilibrium properties?*
+
+```{note}
+In the **thermodynamic limit** ($N \to \infty$), all three ensembles give identical predictions for macroscopic quantities. They differ only in how they handle fluctuations: the canonical ensemble allows energy to fluctuate (but with tiny relative fluctuations $\sim 1/\sqrt{N}$), while the grand canonical ensemble allows both energy and particle number to fluctuate.
+```
 
 +++ { "page-break": true }
 +++
 
-(ch_mce_s_summary)=
+(ch_sp_s_summary)=
 ## Summary
 
-In this chapter we constructed the microcanonical ensemble from first principles and derived the fundamental results of equilibrium statistical mechanics. The key results are:
+In this chapter we have laid the foundations of statistical physics. The central ideas to take away are:
 
-**The microcanonical ensemble** describes an isolated system $(E, V, N)$ fixed. All accessible microstates are equally probable:
+::::{tab-set}
 
-$$\rho(\mathbf{q}, \mathbf{p}) = \frac{1}{\Gamma(E,V,N)}\;\text{ for }\; E < H < E+\Delta$$
+:::{tab-item} The Big Picture
+Statistical physics bridges the microscopic world of atoms and the macroscopic world of thermodynamics. It does so through probability: by counting microstates, we identify the most probable macrostate, which is overwhelmingly more probable than any other for large systems. This is why thermodynamics is so precise.
+:::
 
-**Boltzmann entropy:**
+:::{tab-item} Key Definitions
+- A **microstate** is the complete atomic-level description. A **macrostate** is the small set of macroscopic variables we measure.
+- The **fundamental postulate** says all accessible microstates are equally likely.
+- **Entropy** is $S = k_B \ln \Omega$ — a measure of how many microstates correspond to a given macrostate.
+- **Temperature** is $1/T = \partial S / \partial E$ — the quantity equalised at thermal equilibrium.
+- **Pressure** is $P/T = \partial S/\partial V$ — the quantity equalised when volumes can adjust.
+:::
 
-$$S(E, V, N) = k_B \ln\!\left[\frac{\Gamma(E,V,N)}{h^{3N}N!}\right]$$
+:::{tab-item} Key Results
+- The **first law** $dU = T\,dS - P\,dV + \mu\,dN$ follows directly from these definitions.
+- The **second law** $\Delta S \geq 0$ is a statement of overwhelming probability, not a fundamental law of nature.
+- The **ideal gas law** $PV = Nk_BT$ and the **equipartition theorem** $U = \frac{3}{2}Nk_BT$ are derived entirely from counting microstates.
+- The **Gibbs paradox** is resolved by recognising that identical particles are indistinguishable, requiring the $N!$ correction.
+:::
 
-**Thermodynamic quantities from entropy** (with $U \equiv E$):
+:::{tab-item} What Comes Next
+The microcanonical ensemble is conceptually fundamental but computationally awkward. In practice, we usually work with the **canonical ensemble** (fixed $T$, $V$, $N$), which is mathematically more tractable and directly applicable to systems in contact with a heat bath — which describes almost all real laboratory situations.
+:::
 
-$$\frac{1}{T} = \left(\frac{\partial S}{\partial U}\right)_{V,N}, \quad \frac{P}{T} = \left(\frac{\partial S}{\partial V}\right)_{U,N}, \quad -\frac{\mu}{T} = \left(\frac{\partial S}{\partial N}\right)_{U,V}$$
+::::
 
-**First law (fundamental relation):**
+```{important} Recommended Reading
 
-$$dU = T\,dS - P\,dV + \mu\,dN$$
-
-**Classical ideal gas — Sackur-Tetrode equation:**
-
-$$S(E,V,N) = k_BN\left[\ln\!\left(\frac{V}{N}\!\left(\frac{4\pi mE}{3Nh^2}\right)^{3/2}\right) + \frac{5}{2}\right]$$
-
-**Equations of state for the ideal gas:**
-
-$$U = \frac{3}{2}Nk_BT, \qquad PV = Nk_BT, \qquad C_V = \frac{3}{2}Nk_B$$
-
-**Gibbs paradox:** Treating identical particles as distinguishable leads to a non-extensive entropy and a spurious entropy of mixing. The resolution requires the factor $N!$ from quantum-mechanical indistinguishability, even within an otherwise classical treatment.
-
-```{note} What comes next
-The microcanonical ensemble is conceptually fundamental but often computationally cumbersome — fixing $E$ exactly makes calculations difficult for realistic interacting systems. In the next chapters, we introduce:
-
-- The **canonical ensemble** (fixed $T$, $V$, $N$): the system is in contact with a heat bath at temperature $T$. The constraint on energy is relaxed in favour of fixing $T$. This is usually much easier to work with and gives equivalent results in the thermodynamic limit.
-- The **grand-canonical ensemble** (fixed $T$, $V$, $\mu$): both energy and particle number can fluctuate. This is essential for quantum gases (Bose-Einstein condensation, Fermi gases).
-
-All three ensembles are equivalent in the thermodynamic limit $N \to \infty$, but differ in computational convenience and in how they handle fluctuations.
+- F. Reif, *Fundamentals of Statistical and Thermal Physics* — the most accessible and physically intuitive introduction.
+- C. Kittel & H. Kroemer, *Thermal Physics* — clear, concept-first approach, excellent for undergraduates.
+- R. K. Pathria & P. D. Beale, *Statistical Mechanics* — comprehensive graduate-level reference.
+- M. Kardar, *Statistical Physics of Particles* (Cambridge) — modern, elegant, with excellent physical discussions.
+- L. D. Landau & E. M. Lifshitz, *Statistical Physics, Part 1* — terse but deep; rewarding for advanced students.
+- L. Bocquet, *Lecture Notes on Statistical Physics* (ENS-PSL) — very clear modern notes, freely available.
 ```
 
-```{important} Suggested Books
-
-- R. K. Pathria and P. D. Beale, *Statistical Mechanics*, 4th Ed. (Elsevier)
-- L. D. Landau and E. M. Lifshitz, *Statistical Physics*, Part 1 (Butterworth-Heinemann)
-- M. Kardar, *Statistical Physics of Particles* (Cambridge University Press)
-- K. Huang, *Statistical Mechanics*, 2nd Ed. (Wiley)
-- H. B. Callen, *Thermodynamics and an Introduction to Thermostatistics*, 2nd Ed. (Wiley)
-- F. Reif, *Fundamentals of Statistical and Thermal Physics* (Waveland Press)
-- C. Kittel and H. Kroemer, *Thermal Physics*, 2nd Ed. (W. H. Freeman)
-- L. Bocquet, *Lecture Notes on Statistical Physics* (ENS-PSL)
-```
-
-(ch_mce_s_exercises)=
+(ch_sp_s_exercises)=
 ## Exercises
 
-```{exercise} Energy shell and density of states
-:label: ex_mce_dos
+```{exercise} Counting microstates
+:label: ex_sp_counting
 
-For a single classical particle of mass $m$ in a 3D box of volume $V$:
+You have a system of 3 distinguishable particles. Each particle can be in one of 4 equally probable energy levels: $\epsilon_0, \epsilon_1, \epsilon_2, \epsilon_3$.
 
-1. Write down the Hamiltonian $H(\mathbf{q}, \mathbf{p})$.
-2. Compute the cumulative phase-space volume $\Phi(E)$ enclosed by the energy surface.
-3. From $\Phi(E)$, compute the density of states $\Omega(E) = \partial \Phi/\partial E$.
-4. Sketch $\Omega(E)$ vs $E$. What power law does it follow?
+1. How many total microstates are there?
+2. List all the microstates in which the total energy is $E = 2\epsilon_1$ (assume $\epsilon_n = n\epsilon_1$).
+3. If the fundamental postulate holds, what is the probability of each macrostate (defined by total energy)?
+4. Which macrostate is most probable?
 ```
 
-```{exercise} Entropy and temperature of a classical ideal gas
-:label: ex_mce_entropy
+```{exercise} Entropy and information
+:label: ex_sp_entropy_info
 
-Starting from the Sackur-Tetrode equation (13):
+A system can be in one of $\Omega$ equally probable microstates.
 
-1. Verify that $1/T = (\partial S/\partial E)_{V,N}$ gives $E = \frac{3}{2}Nk_BT$.
-2. Verify that $P/T = (\partial S/\partial V)_{E,N}$ gives $PV = Nk_BT$.
-3. Compute the chemical potential $\mu = -T(\partial S/\partial N)_{E,V}$ and express it in terms of the de Broglie wavelength $\lambda$.
-4. Show that $S$ as given by (13) is explicitly extensive: $S(\lambda E, \lambda V, \lambda N) = \lambda S(E, V, N)$ for any $\lambda > 0$.
+1. If $\Omega = 1$, what is the entropy? What does this tell you physically?
+2. If $\Omega$ doubles (e.g., the volume doubles for an ideal gas), by how much does $S$ increase?
+3. Two independent systems have $\Omega_A = 10^{20}$ and $\Omega_B = 10^{30}$. What is the total entropy of the combined system in units of $k_B$?
+4. Why is it the logarithm of $\Omega$ that appears in the entropy, rather than $\Omega$ itself?
 ```
 
-```{exercise} Thickness of the energy shell
-:label: ex_mce_shell
+```{exercise} Temperature from entropy
+:label: ex_sp_temp
 
-Show explicitly that the entropy $S = k_B \ln \Gamma$ does not depend on the shell width $\Delta$ in the thermodynamic limit:
+A simple model system has entropy $S = aN^{2/3} E^{1/3}$ where $a$ is a positive constant, $N$ is the number of particles, and $E$ is the total energy.
 
-1. Write $\Gamma(E) = \Omega(E)\,\Delta$ where $\Omega(E) \propto E^{3N/2 - 1}$.
-2. Compute $S_\Delta = k_B \ln(\Omega(E)\Delta)$ and $S_\Phi = k_B \ln \Phi(E)$ where $\Phi(E) \propto E^{3N/2}$.
-3. Show that $(S_\Delta - S_\Phi)/S_\Phi \to 0$ as $N \to \infty$ for any finite $\Delta$.
+1. Find the temperature $T$ as a function of $E$ and $N$.
+2. Invert this to find the energy $E$ as a function of $T$ and $N$.
+3. Find the heat capacity $C_V = \partial E / \partial T$ at fixed $N$.
+4. Is the heat capacity extensive (proportional to $N$)? Should it be?
 ```
 
-```{exercise} Physical temperature interpretation
-:label: ex_mce_temp_interp
+```{exercise} Heat flow and entropy
+:label: ex_sp_heat_flow
 
-An ideal gas is in equilibrium at temperature $T$.
+System A has $N_A = 10^{23}$ particles at temperature $T_A = 400$ K. System B has $N_B = 10^{23}$ particles at temperature $T_B = 200$ K. Both are monatomic ideal gases.
 
-1. Show that the average kinetic energy per particle is $\langle \epsilon \rangle = \frac{3}{2}k_BT$.
-2. If the gas is heated from $T_1 = 300$ K to $T_2 = 600$ K at constant volume, by what factor does the number of accessible microstates change? (*Hint*: use $\Gamma \propto E^{3N/2}$ and $E = \frac{3}{2}Nk_BT$.)
-3. Explain qualitatively why heat flows from hot to cold in terms of the total entropy.
+1. What is the total energy $E = E_A + E_B$?
+2. When the two systems are brought into thermal contact, what is the final equilibrium temperature $T_f$? (*Hint*: total energy is conserved; assume equal heat capacities.)
+3. Calculate the entropy change of system A, system B, and the total entropy change when equilibrium is reached. Use $\Delta S = Nk_B \ln(T_f/T_i)$ for each system (derive this if you can).
+4. Confirm that $\Delta S_{\text{total}} > 0$.
 ```
 
-```{exercise} Gibbs paradox
-:label: ex_mce_gibbs
+```{exercise} Free expansion
+:label: ex_sp_free_expansion
 
-Consider a container of volume $V$ divided into two equal halves, each containing $N/2$ identical molecules at temperature $T$ and pressure $P$.
+One mole of an ideal gas (monatomic, $C_V = \frac{3}{2}R$) is confined to the left half of an insulated box of total volume $V = 10$ L. The right half is vacuum. The partition is removed.
 
-1. Compute the entropy change $\Delta S$ when the partition is removed, using (a) the Sackur-Tetrode formula and (b) the formula without the $N!$ factor.
-2. Show that with the correct formula, $\Delta S = 0$.
-3. Now repeat the calculation for the case where the two halves contain *different* gases (A and B). Show that $\Delta S = -Nk_B(x_A \ln x_A + x_B \ln x_B)$ where $x_A = x_B = 1/2$.
-4. Explain physically why the two cases give different results.
+1. What is the change in temperature? (*Hint*: no work is done and no heat is exchanged with the surroundings.)
+2. What is the entropy change? Express your answer in J/K.
+3. Is this process reversible? Explain using the concept of microstates.
+4. What would you need to do to restore the gas to its original state?
 ```
 
-```{exercise} Hypersphere volumes
-:label: ex_mce_hypersphere
+```{exercise} The Gibbs paradox
+:label: ex_sp_gibbs
 
-Using the gamma-function result $V_n(R) = \pi^{n/2}R^n/\Gamma(n/2+1)$:
+A box of volume $V$ is divided into two equal halves. The left half contains $N/2$ molecules of gas A and the right half contains $N/2$ molecules of gas B, both at the same temperature $T$ and pressure $P$.
 
-1. Verify the formula for $n = 1, 2, 3$.
-2. Show that for large $n$, the surface area $A_n(R) = dV_n/dR$ satisfies $A_n(R)/V_n(R) = n/R$.
-3. Show that for large $n$, most of the volume of a hypersphere lies within a thin shell of relative thickness $\sim 1/n$ near the surface. (*Hint*: compute the fraction of volume in the shell $[R-\delta, R]$ for small $\delta$.)
-4. Explain the physical significance of this result for statistical mechanics.
+1. If A and B are **different** gases, calculate the entropy of mixing when the partition is removed. Express your answer in terms of $N$ and $k_B$.
+2. If A and B are **identical** gases and you treat the molecules as distinguishable, what entropy change do you get? Why is this result wrong?
+3. Explain in words why the $N!$ correction resolves the paradox.
+4. What is the physical content of the statement that "identical particles are indistinguishable"?
 ```
 
-```{exercise} Heat capacities and adiabatic processes
-:label: ex_mce_adiabatic
+```{exercise} The ideal gas from scratch
+:label: ex_sp_ideal_gas
 
-For an ideal gas with $N$ particles in $d$ dimensions, the energy is $E = \frac{d}{2}Nk_BT$.
+Starting from the Sackur-Tetrode entropy:
 
-1. Derive $C_V = \frac{d}{2}Nk_B$ and $C_P = \frac{d+2}{2}Nk_B$.
-2. Define $\gamma = C_P/C_V$ and show that for an adiabatic process ($dS = 0$), $PV^\gamma = \text{const}$.
-3. For $d = 3$ (monatomic ideal gas), $\gamma = 5/3$. Evaluate the ratio for a diatomic gas treated classically (5 quadratic degrees of freedom per molecule).
-```
+$$S(E, V, N) = Nk_B \left[\ln\!\left(\frac{V}{N}\left(\frac{4\pi m E}{3Nh^2}\right)^{3/2}\right) + \frac{5}{2}\right]$$
+
+1. Derive the ideal gas law $PV = Nk_BT$ by computing $P/T = (\partial S/\partial V)_{E,N}$.
+2. Derive the caloric equation of state $E = \frac{3}{2}Nk_BT$ by computing $1/T = (\partial S/\partial E)_{V,N}$.
+3. Show that $S$ is extensive: verify that $S(\lambda E, \lambda V, \lambda N) = \lambda S(E, V, N)$ for any positive $\lambda$.
+4. Compute the entropy change when the temperature doubles at constant volume and particle number.
 ```
